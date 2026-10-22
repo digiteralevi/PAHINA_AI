@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pahina AI — Setup Wizard</title>
+<style>
+  :root{
+    --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Inter, sans-serif;
+    --sans-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, sans-serif;
+  }
+
+  html[data-theme="light"]{
+    --bg: #F7F2E9;
+    --card: #ffffff;
+    --card-2: #FBF7EF;
+    --text: #2A1F3D;
+    --text-soft: #6B5D7A;
+    --text-faint: #948699;
+    --line: rgba(74,44,107,0.10);
+    --line-soft: rgba(74,44,107,0.06);
+    --accent: #6B3FA0;
+    --accent-hover: #7C4CB3;
+    --accent-tint: rgba(107,63,160,0.08);
+    --success: #9C7A25;
+    --success-tint: rgba(156,122,37,0.10);
+    --input-bg: #ffffff;
+    --shadow: 0 1px 2px rgba(74,44,107,0.05), 0 8px 30px rgba(74,44,107,0.07);
+    --rail-inactive: #E3D9C6;
+  }
+
+  html[data-theme="dark"]{
+    --bg: #17111F;
+    --card: #241A32;
+    --card-2: #1D1428;
+    --text: #F5EFE3;
+    --text-soft: #C3B3D6;
+    --text-faint: #94879F;
+    --line: rgba(212,175,90,0.14);
+    --line-soft: rgba(245,239,227,0.06);
+    --accent: #C9A227;
+    --accent-hover: #DBB53A;
+    --accent-tint: rgba(201,162,39,0.14);
+    --success: #D4AF5A;
+    --success-tint: rgba(212,175,90,0.12);
+    --input-bg: #2C2039;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 30px rgba(0,0,0,0.5);
+    --rail-inactive: #3C2E4D;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html, body{ height:100%; }
+  body{
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height:100vh;
+    padding: 0 20px 80px;
+    line-height:1.47;
+    transition: background .25s ease, color .25s ease;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .topbar{
+    max-width: 1000px; margin: 0 auto;
+    display:flex; align-items:center; justify-content: space-between;
+    padding: 22px 0;
+  }
+  .brand{ font-family: var(--sans-display); font-weight:600; font-size:15px; letter-spacing:-0.01em; }
+
+  .theme-toggle{
+    display:flex; align-items:center; background: var(--card); border:1px solid var(--line);
+    border-radius: 20px; padding: 3px; gap:2px;
+  }
+  .theme-toggle button{
+    border:none; background:none; color: var(--text-soft); font-size:13px; font-weight:600;
+    padding: 6px 14px; border-radius:17px; cursor:pointer; font-family: var(--sans);
+    display:flex; align-items:center; gap:6px; transition: all .2s;
+  }
+  .theme-toggle button.active{ background: var(--bg); color: var(--text); box-shadow: var(--shadow); }
+
+  .shell{ max-width: 1000px; margin:0 auto; }
+
+  .masthead{ text-align:center; padding: 40px 0 52px; }
+  .masthead h1{
+    font-family: var(--sans-display); font-weight:600; font-size: clamp(32px, 5vw, 48px);
+    letter-spacing: -0.02em; margin-bottom:14px;
+  }
+  .masthead p{ color: var(--text-soft); font-size: 19px; max-width: 40ch; margin: 0 auto; }
+
+  .layout{ display:grid; grid-template-columns: 200px 1fr; gap: 32px; align-items:start; }
+  @media (max-width: 760px){ .layout{ grid-template-columns: 1fr; } .rail{ display:none; } }
+
+  .rail{ position: sticky; top: 30px; padding-top: 8px; }
+  .rail ol{ list-style:none; display:flex; flex-direction:column; gap:2px; }
+  .rail li{
+    font-size:14px; color: var(--text-faint); padding: 10px 14px; border-radius:10px;
+    display:flex; align-items:center; gap:10px; font-weight:500;
+  }
+  .rail li .bead{ width:6px; height:6px; border-radius:50%; background: var(--rail-inactive); flex-shrink:0; }
+  .rail li.active{ background: var(--accent-tint); color: var(--accent); font-weight:600; }
+  .rail li.active .bead{ background: var(--accent); }
+  .rail li.done{ color: var(--text-soft); }
+  .rail li.done .bead{ background: var(--success); }
+
+  .card{
+    background: var(--card);
+    border-radius: 18px;
+    padding: 44px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-soft);
+  }
+  @media (max-width: 480px){ .card{ padding: 28px 22px; border-radius:14px; } }
+
+  .step-content{ display:none; }
+  .step-content.active{ display:block; animation: rise .35s cubic-bezier(.2,.8,.2,1); }
+  @keyframes rise{ from{ opacity:0; transform: translateY(8px);} to{ opacity:1; transform:none; } }
+
+  .step-heading{ font-family: var(--sans-display); font-size: 26px; font-weight:600; letter-spacing:-0.01em; margin-bottom: 6px; }
+  .step-counter{ font-size:12.5px; font-weight:600; color: var(--accent); margin-bottom:10px; letter-spacing:0.01em; }
+  .step-sub{ color: var(--text-soft); font-size:15px; margin-bottom: 32px; }
+
+  .field-wrap{ position:relative; }
+  .field-check{
+    position:absolute; right:13px; top:38px; width:18px; height:18px; border-radius:50%;
+    background: var(--success); color:#fff; font-size:11px; display:none; align-items:center; justify-content:center;
+    font-weight:700;
+  }
+  .field-wrap.valid .field-check{ display:flex; }
+  .field-wrap.valid input, .field-wrap.valid textarea{ padding-right: 40px; }
+
+  .security-note{ display:flex; align-items:center; gap:6px; color: var(--text-faint); font-size:12px; margin-top:8px; }
+  .security-note svg{ flex-shrink:0; }
+
+  .preview-panel{
+    background: var(--card-2); border:1px solid var(--line-soft); border-radius:16px; padding:20px;
+    margin-bottom:28px;
+  }
+  .preview-panel .preview-label{ font-size:11px; font-weight:600; color: var(--text-faint); margin-bottom:12px; letter-spacing:0.02em; }
+  .preview-chat{ display:flex; gap:10px; align-items:flex-start; }
+  .preview-avatar{
+    width:34px; height:34px; border-radius:50%; background: var(--accent); color:#fff; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  }
+  html[data-theme="dark"] .preview-avatar{ color:#1C130A; }
+  .preview-bubble{ background: var(--card); border:1px solid var(--line-soft); border-radius: 4px 14px 14px 14px; padding:12px 14px; font-size:13.5px; color: var(--text); max-width: 320px; }
+  .preview-bubble .preview-name{ font-weight:600; font-size:12.5px; color: var(--text-soft); margin-bottom:3px; }
+  .preview-bubble .preview-empty{ color: var(--text-faint); font-style: normal; }
+
+  .loading-overlay{
+    display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    padding: 60px 20px; text-align:center;
+  }
+  .loading-overlay.active{ display:flex; }
+  .spinner{
+    width:32px; height:32px; border-radius:50%; border: 3px solid var(--line);
+    border-top-color: var(--accent); animation: spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .loading-overlay p{ color: var(--text-soft); font-size:14.5px; }
+
+  .form-group{ margin-bottom: 22px; }
+  label{ display:block; font-size:13px; font-weight:600; color: var(--text); margin-bottom:8px; }
+  label .opt{ color: var(--text-faint); font-weight:400; }
+  input, textarea, select{
+    width:100%; padding: 13px 15px; border:1px solid var(--line); border-radius:12px;
+    font-size:15px; font-family: var(--sans); color: var(--text); background: var(--input-bg);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input::placeholder, textarea::placeholder{ color: var(--text-faint); }
+  input:focus, textarea:focus, select:focus{ outline:none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-tint); }
+  select{ appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position: right 15px center; padding-right:36px; }
+  .hint{ color: var(--text-faint); font-size:12.5px; margin-top:7px; }
+  .char-count{ color: var(--text-faint); font-size:11.5px; margin-top:6px; text-align:right; }
+  .char-count.warn{ color: var(--accent); }
+
+  .toast{
+    position: fixed; bottom: 28px; left:50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: var(--bg); padding: 11px 20px; border-radius: 12px;
+    font-size: 13.5px; font-weight:500; opacity:0; pointer-events:none; transition: all .25s ease;
+    box-shadow: var(--shadow); z-index: 1200;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  .field-wrap.shake input, .field-wrap.shake textarea, .field-wrap.shake select{ border-color:#D96B6B; }
+  @keyframes shakeX{
+    10%,90%{ transform: translateX(-1px); } 20%,80%{ transform: translateX(2px); }
+    30%,50%,70%{ transform: translateX(-4px); } 40%,60%{ transform: translateX(4px); }
+  }
+  .shake-anim{ animation: shakeX .45s; }
+
+  .pw-wrap{ position:relative; }
+  .pw-toggle{
+    position:absolute; right:12px; top:50%; transform: translateY(-50%); background:none; border:none;
+    color: var(--text-faint); cursor:pointer; font-size:12.5px; font-weight:600; padding:4px;
+  }
+  .pw-toggle:hover{ color: var(--text-soft); }
+
+  .example-box{ background: var(--card-2); border-radius:12px; padding: 15px 17px; margin-top: 14px; border: 1px solid var(--line-soft); }
+  .example-box h4{ color: var(--text-soft); font-size:11.5px; font-weight:600; margin-bottom:8px; text-transform: none; }
+  .example-box ul{ color: var(--text-soft); padding-left: 18px; font-size: 13.5px; }
+  .example-box p{ color: var(--text-soft); font-size:13.5px; }
+  .example-box li + li{ margin-top: 4px; }
+
+  .btn{ padding: 12px 22px; border:none; border-radius: 12px; font-weight:600; font-size:15px; cursor:pointer; font-family: var(--sans); transition: all .15s; }
+  .btn-primary{ background: var(--accent); color: #fff; }
+  .btn-primary:hover{ background: var(--accent-hover); }
+  html[data-theme="dark"] .btn-primary{ color: #1C130A; }
+  .btn-secondary{ background: var(--card-2); color: var(--text); border: 1px solid var(--line); }
+  .btn-secondary:hover{ background: var(--line-soft); }
+  .btn-group{ display:flex; gap:12px; margin-top: 36px; justify-content: space-between; align-items:center; }
+
+  .ai-link{ background:none; border:none; color: var(--accent); font-size:13.5px; font-weight:600; cursor:pointer; margin-top:10px; padding:0; display:inline-flex; align-items:center; gap:6px; }
+  .ai-link:hover{ color: var(--accent-hover); }
+
+  .success-mark{ display:flex; align-items:center; gap:16px; padding-bottom: 28px; margin-bottom: 28px; }
+  .success-mark .dot{ width:44px; height:44px; border-radius:50%; background: var(--success-tint); color: var(--success); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; font-weight:700; }
+  .success-mark h2{ font-family: var(--sans-display); font-size:26px; font-weight:600; letter-spacing:-0.01em; }
+  .success-mark p{ color: var(--text-soft); font-size:14.5px; margin-top:3px; }
+
+  .link-box{ background: var(--card-2); border: 1px solid var(--line-soft); border-radius:14px; padding: 20px; margin-bottom: 16px; }
+  .link-box h3{ font-size: 14px; font-weight:600; color: var(--text); margin-bottom:6px; }
+  .link-box .desc{ color: var(--text-soft); font-size: 13px; margin-bottom: 12px; }
+  .link-box code{ background: var(--input-bg); border:1px solid var(--line); padding: 11px 13px; border-radius:10px; display:block; word-break: break-all; color: var(--text); font-family: ui-monospace, 'SF Mono', 'Courier New', monospace; font-size: 12.5px; margin-bottom: 12px; }
+
+  .checklist{ margin-top: 30px; }
+  .checklist h3{ font-family: var(--sans-display); font-weight:600; font-size:18px; margin-bottom:14px; letter-spacing:-0.01em; }
+  .checklist ul{ list-style:none; }
+  .checklist li{ padding: 10px 0 10px 26px; position:relative; color: var(--text-soft); font-size:14.5px; border-top:1px solid var(--line-soft); }
+  .checklist li:first-child{ border-top:none; }
+  .checklist li::before{ content:'✓'; position:absolute; left:0; color: var(--success); font-weight:700; }
+
+  .final-note{ text-align:center; color: var(--text-faint); font-size:13px; margin-top: 36px; padding-top: 24px; border-top:1px solid var(--line-soft); }
+
+  .product-item{ background: var(--card-2); border:1px solid var(--line-soft); border-radius:14px; padding: 22px; margin-bottom: 16px; }
+
+  .modal{ position:fixed; inset:0; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); display:none; align-items:center; justify-content:center; z-index:1000; padding: 20px; }
+  .modal.active{ display:flex; }
+  .modal-content{ background: var(--card); padding: 32px; border-radius:18px; max-width: 560px; width:100%; max-height:80vh; overflow-y:auto; box-shadow: var(--shadow); }
+  .modal-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 20px; }
+  .modal-header h3{ font-family: var(--sans-display); font-size:20px; font-weight:600; letter-spacing:-0.01em; }
+  .close-modal{ background: var(--card-2); border:none; width:28px; height:28px; border-radius:50%; font-size:16px; cursor:pointer; color: var(--text-soft); line-height:1; flex-shrink:0; }
+  .close-modal:hover{ background: var(--line-soft); }
+  .prompt-box{ background: var(--card-2); border:1px solid var(--line-soft); border-radius:12px; padding: 16px; margin: 6px 0 16px; }
+  .prompt-box h4{ color: var(--text); font-size:13px; font-weight:600; margin-bottom:8px; }
+  .prompt-box code{ background: var(--input-bg); padding: 12px 13px; border-radius:10px; display:block; font-family: ui-monospace, 'SF Mono', 'Courier New', monospace; font-size:12.5px; word-break: break-all; color: var(--text-soft); border:1px solid var(--line); }
+  .howto{ background: var(--accent-tint); border-radius:12px; padding: 16px; margin-bottom: 20px; }
+  .howto h4{ color: var(--accent); font-size:13px; font-weight:600; margin-bottom:10px; }
+  .howto ol{ color: var(--text-soft); padding-left:20px; font-size:13.5px; line-height:1.8; }
+  .howto a{ color: var(--accent); font-weight:600; text-decoration:none; }
+  .howto a:hover{ text-decoration:underline; }
+
+  .save-indicator{ position:fixed; top:20px; right:20px; background: var(--card); color: var(--text); padding:10px 18px; border-radius:12px; font-size:13px; display:none; box-shadow: var(--shadow); border:1px solid var(--line); font-weight:500; }
+  .save-indicator.show{ display:block; animation: slidein .25s ease; }
+  @keyframes slidein{ from{ opacity:0; transform: translateY(-6px); } to{ opacity:1; transform:none; } }
+
+  a{ color: var(--accent); }
+  .new-bot-note{ background: var(--accent-tint); border-radius:12px; padding:13px 15px; font-size:13.5px; color: var(--text); margin-bottom:26px; }
+  .new-bot-note b{ color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="saveIndicator" class="save-indicator">Saved</div>
+<div id="toast" class="toast"></div>
+
+<div class="topbar">
+  <div class="brand">Pahina AI</div>
+  <div class="theme-toggle" id="themeToggle">
+    <button type="button" data-theme-choice="light">Light</button>
+    <button type="button" data-theme-choice="dark">Dark</button>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="masthead">
+    <h1>Gumawa ng bagong AI chatbot</h1>
+    <p>Sagutan ang ilang tanong at gagawa kami ng assistant na sumasagot sa customers mo 24/7.</p>
+  </div>
+
+  <div class="layout">
+    <nav class="rail">
+      <ol id="railList">
+        <li data-step="1"><span class="bead"></span>Business info</li>
+        <li data-step="2"><span class="bead"></span>Products</li>
+        <li data-step="3"><span class="bead"></span>Payment</li>
+        <li data-step="4"><span class="bead"></span>Personality</li>
+        <li data-step="5"><span class="bead"></span>Your links</li>
+        <li data-step="6"><span class="bead"></span>All set</li>
+      </ol>
+    </nav>
+
+    <div class="card">
+
+      <!-- STEP 1 -->
+      <div class="step-content active" id="step1">
+        <div class="step-counter">Step 1 of 6</div>
+        <h2 class="step-heading">Business info</h2>
+        <p class="step-sub">This tells your AI employee who it's speaking on behalf of.</p>
+
+        <div class="new-bot-note"><b>Laging bagong bot ang gagawin nito.</b> Hindi nito papalitan ang mga bot mo na. Para baguhin ang isang existing bot, gamitin ang admin panel → <b>My Bots</b> → <b>Edit</b>.</div>
+
+        <div class="preview-panel">
+          <div class="preview-label">Live preview</div>
+          <div class="preview-chat">
+            <div class="preview-avatar" id="previewAvatar">A</div>
+            <div class="preview-bubble">
+              <div class="preview-name" id="previewName">Your employee</div>
+              <span id="previewText" class="preview-empty">Fill in your business name and headline to see a preview here.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group field-wrap" id="wrap-ownerName">
+          <label>Your name</label>
+          <input type="text" id="ownerName" placeholder="Juan Dela Cruz" required>
+          <span class="field-check">✓</span>
+        </div>
+
+        <div class="form-group field-wrap" id="wrap-businessName">
+          <label>Business name</label>
+          <input type="text" id="businessName" placeholder="My Awesome Business" required>
+          <span class="field-check">✓</span>
+        </div>
+
+        <div class="form-group field-wrap" id="wrap-email">
+          <label>Email address</label>
+          <input type="email" id="email" placeholder="you@example.com" required>
+          <span class="field-check">✓</span>
+        </div>
+
+        <div class="form-group">
+          <label>Phone / mobile <span class="opt">(optional)</span></label>
+          <input type="tel" id="phone" placeholder="0917-123-4567">
+          <div class="hint">Used for customer support only.</div>
+        </div>
+
+        <div class="form-group field-wrap" id="wrap-botName">
+          <label>Your employee's name</label>
+          <input type="text" id="botName" placeholder="e.g., Alex, Sarah" required>
+          <span class="field-check">✓</span>
+          <div class="hint">Give your AI employee a name customers will chat with.</div>
+        </div>
+
+        <div class="form-group">
+          <label>Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="tl">Taglish (Filipino + English)</option>
+          </select>
+        </div>
+
+        <div class="form-group field-wrap" id="wrap-headline">
+          <label>Store headline</label>
+          <input type="text" id="headline" placeholder="e.g., Your business, working 24/7" required>
+          <span class="field-check">✓</span>
+          <div class="hint">A short line that describes what your business does.</div>
+          <div class="char-count" id="headlineCount">0 / 60 characters</div>
+          <button type="button" class="ai-link" onclick="showAIHelper('headline')">Draft this with AI</button>
+          <div class="example-box">
+            <h4>Examples</h4>
+            <ul>
+              <li>Premium skincare for glowing skin</li>
+              <li>Affordable online courses for everyone</li>
+              <li>Handmade crafts with love</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tagline <span class="opt">(optional)</span></label>
+          <input type="text" id="tagline" placeholder="e.g., An assistant that sells for you">
+        </div>
+
+        <div class="form-group field-wrap" id="wrap-description">
+          <label>Business description</label>
+          <textarea id="description" rows="4" placeholder="Tell us about your business..." required></textarea>
+          <span class="field-check">✓</span>
+          <div class="hint">What you sell, who buys it, and what makes you different.</div>
+          <div class="char-count" id="descriptionCount">0 / 400 characters</div>
+          <button type="button" class="ai-link" onclick="showAIHelper('description')">Draft this with AI</button>
+          <div class="example-box">
+            <h4>Example</h4>
+            <p>"We sell organic skincare made from natural ingredients, for women aged 25–45 who care about clean beauty. Our packaging is eco-friendly and every formula is cruelty-free."</p>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <div></div>
+          <button class="btn btn-primary" onclick="nextStep(2)">Continue to products</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-content" id="step2">
+        <div class="step-counter">Step 2 of 6</div>
+        <h2 class="step-heading">Products &amp; services</h2>
+        <p class="step-sub">Add what you'd like your AI employee to sell.</p>
+
+        <div id="products-container">
+          <div class="product-item">
+            <div class="form-group">
+              <label>Product name</label>
+              <input type="text" class="product-name" placeholder="e.g., Starter Package" required>
+            </div>
+            <div class="form-group">
+              <label>Price</label>
+              <input type="text" class="product-price" placeholder="₱2497" required>
+            </div>
+            <div class="form-group">
+              <label>Description <span class="opt">(one feature per line)</span></label>
+              <textarea class="product-desc" rows="3" placeholder="24/7 AI sales assistant&#10;No coding required&#10;Automated customer support"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="addProduct()">Add another product</button>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+          <button class="btn btn-primary" onclick="nextStep(3)">Continue to payment</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-content" id="step3">
+        <div class="step-counter">Step 3 of 6</div>
+        <h2 class="step-heading">Payment methods</h2>
+        <p class="step-sub">How will customers pay you?</p>
+
+        <div class="form-group">
+          <label>GCash number <span class="opt">(optional)</span></label>
+          <input type="tel" id="gcashNumber" placeholder="0917-123-4567">
+        </div>
+
+        <div class="form-group">
+          <label>GCash account name <span class="opt">(optional)</span></label>
+          <input type="text" id="gcashName" placeholder="Juan Dela Cruz">
+        </div>
+
+        <div class="form-group">
+          <label>Maya number <span class="opt">(optional)</span></label>
+          <input type="tel" id="mayaNumber" placeholder="0917-123-4567">
+        </div>
+
+        <div class="form-group">
+          <label>PayPal link <span class="opt">(optional)</span></label>
+          <input type="url" id="paypalLink" placeholder="https://paypal.me/yourname">
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+          <button class="btn btn-primary" onclick="nextStep(4)">Continue to personality</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-content" id="step4">
+        <div class="step-counter">Step 4 of 6</div>
+        <h2 class="step-heading">Employee personality</h2>
+        <p class="step-sub">Choose how your AI employee should sound when it talks to customers.</p>
+
+        <div class="form-group">
+          <label>Personality</label>
+          <select id="botPersonality" required>
+            <option value="">Choose one...</option>
+            <option value="friendly">Friendly &amp; casual — most popular</option>
+            <option value="professional">Professional &amp; formal</option>
+            <option value="playful">Playful &amp; energetic</option>
+            <option value="expert">Expert &amp; authoritative</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Google Gemini API key</label>
+          <input type="password" id="apiKey" placeholder="Paste your API key here" autocomplete="new-password">
+          <div class="hint">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a>. <b>May bot ka na at naka-save na ang key mo?</b> Iwanang blangko; gagamitin ng bagong bot ang shared key mo. Kung maglalagay ka ng bago, para sa bot na ito lang iyon.</div>
+          <div class="security-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Naka-save sa sarili mong Supabase project at hindi nakikita ng mga bisita ng page mo.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Admin email</label>
+          <input type="email" id="adminEmail" placeholder="ang email na nilagay mo sa schema.sql" autocomplete="username" required>
+          <div class="hint">Ito ang admin user na ginawa mo sa Supabase (Authentication → Users).</div>
+        </div>
+
+        <div class="form-group">
+          <label>Admin password</label>
+          <div class="pw-wrap">
+            <input type="password" id="adminPassword" autocomplete="current-password" required>
+            <button type="button" class="pw-toggle" onclick="togglePassword('adminPassword', this)">Show</button>
+          </div>
+          <div class="hint">Hindi ito sine-save ng wizard. Ginagamit lang ito para mag-login at i-save ang settings mo.</div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="prevStep(3)">Back</button>
+          <button class="btn btn-primary" onclick="generateBot()">Create my new bot</button>
+        </div>
+
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="spinner"></div>
+          <p id="loadingText">Setting up your AI employee...</p>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step-content" id="step5">
+        <div class="success-mark">
+          <div class="dot">✓</div>
+          <div>
+            <h2 id="hiredGreeting">Your AI employee is hired</h2>
+            <p>It's ready to work for you 24/7.</p>
+          </div>
+        </div>
+
+        <div class="link-box">
+          <h3>Employee link — share with customers</h3>
+          <div class="desc">Put this on your website, social profiles, or send it directly to buyers.</div>
+          <code id="botLink">(lalabas dito ang link ng chatbot)</code>
+          <button class="btn btn-secondary" onclick="copyToClipboard('botLink')">Copy link</button>
+        </div>
+
+        <div class="link-box">
+          <h3>Admin panel — for you only</h3>
+          <div class="desc">Use this to update products, pricing, and settings. Keep it private.</div>
+          <code id="adminLink">(lalabas dito ang admin link)</code>
+          <button class="btn btn-secondary" onclick="copyToClipboard('adminLink')">Copy link</button>
+        </div>
+
+        <div class="checklist">
+          <h3>What to do next</h3>
+          <ul>
+            <li>Save both links somewhere safe</li>
+            <li>Share the employee link on your website or with customers</li>
+            <li>Test it yourself before sending it out</li>
+            <li>Use the admin panel any time you need to make changes</li>
+            <li>Walang Gemini key? Idagdag ito sa admin panel → Settings (shared) o Config (para sa bot na ito)</li>
+            <li>Lahat ng bots mo ay nasa admin panel → My Bots</li>
+          </ul>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="prevStep(4)">Back</button>
+          <button class="btn btn-primary" onclick="nextStep(6)">Continue</button>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="step-content" id="step6">
+        <div class="success-mark">
+          <div class="dot">✓</div>
+          <div>
+            <h2>You're all set</h2>
+            <p>Your AI employee is live and working.</p>
+          </div>
+        </div>
+
+        <div class="checklist">
+          <h3>Quick reference</h3>
+          <ul>
+            <li>Employee link — ibahagi ito sa customers</li>
+            <li>Admin panel — your control center, keep it private</li>
+            <li>Support — support@digiteralevi.com</li>
+            <li>Tutorials — video guides on our YouTube channel</li>
+          </ul>
+        </div>
+
+        <div class="checklist">
+          <h3>Tips for the first week</h3>
+          <ul>
+            <li>Test your employee regularly to check its answers</li>
+            <li>Keep products and prices current in the admin panel</li>
+            <li>Watch real conversations and refine responses over time</li>
+            <li>Join our Facebook group for tips from other users</li>
+          </ul>
+        </div>
+
+        <div class="btn-group" style="justify-content:flex-start; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" onclick="startAnotherBot()">Gumawa ng isa pang bot</button>
+          <a href="https://digitera-storefront.vercel.app/" target="_blank" class="btn btn-primary" style="text-decoration:none; display:inline-block;">Visit our main store</a>
+        </div>
+
+        <p class="final-note">Pahina AI — © 2026 Digitera Levi Shop</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- AI Helper Modal -->
+<div id="aiModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Draft your <span id="aiFieldType"></span> with AI</h3>
+      <button class="close-modal" onclick="closeModal()">&times;</button>
+    </div>
+
+    <p style="color: var(--text-soft); margin-bottom: 18px; font-size:14px;">Copy this prompt into Gemini or ChatGPT, then paste the result back into the form.</p>
+
+    <div class="prompt-box" id="headlinePrompt">
+      <h4>For your headline</h4>
+      <code>"Create a catchy business headline for: [your business type]. Keep it under 10 words. Make it professional but friendly."</code>
+    </div>
+
+    <div class="prompt-box" id="descPrompt">
+      <h4>For your description</h4>
+      <code>"Write a business description for [your business]. Include: 1) what you sell, 2) who your target customers are, 3) what makes you unique. Keep it 2–3 sentences."</code>
+    </div>
+
+    <div class="howto">
+      <h4>How to use it</h4>
+      <ol>
+        <li>Copy the prompt above</li>
+        <li>Go to <a href="https://chat.openai.com" target="_blank">ChatGPT</a> or <a href="https://gemini.google.com" target="_blank">Gemini</a></li>
+        <li>Paste it and add your business details</li>
+        <li>Copy the AI's response</li>
+        <li>Paste it back into the form</li>
+      </ol>
+    </div>
+
+    <button class="btn btn-primary" onclick="closeModal()" style="width:100%;">Got it</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* =====================================================================
+   CONFIG — dapat pareho ng nasa index.html (Supabase -> Project Settings -> API)
+   ===================================================================== */
+const CONFIG = {
+  SUPABASE_URL: 'PASTE_YOUR_SUPABASE_URL',
+  SUPABASE_ANON_KEY: 'PASTE_YOUR_ANON_KEY'
+};
+
+/* PAHINA CONNECT: a ?c= link carries the buyer's own Supabase project (public keys only).
+   With it, one hosted copy of Pahina AI works for every buyer. */
+const PAHINA_C = (function () { try { return new URLSearchParams(location.search).get('c') || ''; } catch (e) { return ''; } })();
+(function () {
+  if (!PAHINA_C) return;
+  try {
+    const j = JSON.parse(decodeURIComponent(escape(atob(PAHINA_C.replace(/-/g, '+').replace(/_/g, '/')))));
+    const sp = j && j.supabase;
+    if (sp && sp.url && sp.anonKey) { CONFIG.SUPABASE_URL = String(sp.url).trim().replace(/\/$/, ''); CONFIG.SUPABASE_ANON_KEY = String(sp.anonKey).trim(); }
+  } catch (e) { /* bad link: keep CONFIG */ }
+})();
+const cQ = (lead) => PAHINA_C ? (lead + 'c=' + encodeURIComponent(PAHINA_C)) : '';
+let sb = null;
+let currentStep = 1;
+let createdBotId = null;
+let autoSaveTimer;
+
+/* ---------- Theme ---------- */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('#themeToggle button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeChoice === theme);
+  });
+  try { localStorage.setItem('ai_employee_theme', theme); } catch(e) {}
+}
+
+function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('ai_employee_theme'); } catch(e) {}
+  if (!saved) {
+    saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  applyTheme(saved);
+}
+
+document.getElementById('themeToggle').addEventListener('click', function(e) {
+  const btn = e.target.closest('button[data-theme-choice]');
+  if (!btn) return;
+  applyTheme(btn.dataset.themeChoice);
+});
+
+/* ---------- Step wizard ---------- */
+function updateProgress(step) {
+  document.querySelectorAll('#railList li').forEach((li) => {
+    const stepNum = parseInt(li.dataset.step, 10);
+    li.classList.remove('active', 'done');
+    if (stepNum === step) li.classList.add('active');
+    if (stepNum < step) li.classList.add('done');
+  });
+}
+
+function showStep(step) {
+  document.querySelectorAll('.step-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  document.getElementById('step' + step).classList.add('active');
+  updateProgress(step);
+  currentStep = step;
+}
+
+function nextStep(step) {
+  if (validateStep(currentStep)) {
+    saveFormData();
+    showStep(step);
+  }
+}
+
+function prevStep(step) {
+  showStep(step);
+}
+
+function validateStep(step) {
+  const currentDiv = document.getElementById('step' + step);
+  const requiredFields = currentDiv.querySelectorAll('[required]');
+
+  for (let field of requiredFields) {
+    if (!field.value.trim()) {
+      const wrap = field.closest('.field-wrap') || field.closest('.form-group');
+      if (wrap) {
+        wrap.classList.add('shake-anim');
+        setTimeout(() => wrap.classList.remove('shake-anim'), 450);
+      }
+      field.focus();
+      showToast('Please fill in the highlighted field');
+      return false;
+    }
+  }
+  return true;
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function togglePassword(fieldId, btn) {
+  const field = document.getElementById(fieldId);
+  const isHidden = field.type === 'password';
+  field.type = isHidden ? 'text' : 'password';
+  btn.textContent = isHidden ? 'Hide' : 'Show';
+}
+
+function addProduct() {
+  const container = document.getElementById('products-container');
+  const newProduct = document.createElement('div');
+  newProduct.className = 'product-item';
+  newProduct.innerHTML = `
+    <div class="form-group">
+      <label>Product name</label>
+      <input type="text" class="product-name" placeholder="e.g., Premium Package" required>
+    </div>
+    <div class="form-group">
+      <label>Price</label>
+      <input type="text" class="product-price" placeholder="₱2995" required>
+    </div>
+    <div class="form-group">
+      <label>Description <span class="opt">(one feature per line)</span></label>
+      <textarea class="product-desc" rows="3" placeholder="Feature 1&#10;Feature 2&#10;Feature 3"></textarea>
+    </div>
+  `;
+  container.appendChild(newProduct);
+}
+
+function must(res) { if (res && res.error) throw new Error(res.error.message); return res; }
+
+async function generateBot() {
+  if (!validateStep(4)) return;
+  if (/^PASTE_/.test(CONFIG.SUPABASE_URL) || /^PASTE_/.test(CONFIG.SUPABASE_ANON_KEY) || !window.supabase) {
+    showToast('Palitan muna ang CONFIG sa itaas ng setup.html (Supabase URL at anon key).');
+    return;
+  }
+  if (!document.getElementById('botPersonality').value) { showToast('Pumili ng personality.'); return; }
+  const overlay = document.getElementById('loadingOverlay');
+  const btnGroup = document.querySelector('#step4 .btn-group');
+  const loadingText = document.getElementById('loadingText');
+  overlay.classList.add('active');
+  btnGroup.style.display = 'none';
+  const fail = (msg) => { overlay.classList.remove('active'); btnGroup.style.display = ''; showToast(msg); };
+
+  try {
+    sb = sb || window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    loadingText.textContent = 'Nagla-login...';
+    const email = document.getElementById('adminEmail').value.trim();
+    const login = await sb.auth.signInWithPassword({ email, password: document.getElementById('adminPassword').value });
+    if (login.error || !login.data.session) { return fail('Mali ang admin email o password.'); }
+    const admin = await sb.rpc('is_admin');
+    if (admin.error) { await sb.auth.signOut(); return fail('May problema: ' + admin.error.message); }
+    if (!admin.data) { await sb.auth.signOut(); return fail('Ang owner/admin account lang ang puwedeng gumawa ng bagong bot.'); }
+
+    const g = (id) => (document.getElementById(id).value || '').trim();
+
+    // Laging BAGONG bot. Exception: bagong install na may iisang blangkong bot pa lang -> iyon ang pupunuin.
+    loadingText.textContent = 'Gumagawa ng bagong bot...';
+    const botsRes = await sb.from('bots').select('id').order('created_at', { ascending: true });
+    if (botsRes.error) { await sb.auth.signOut(); return fail('Hindi pa naka-upgrade ang database. I-run muna ang multi-bot SQL (tingnan ang guide).'); }
+    let botId = null;
+    if ((botsRes.data || []).length === 1) {
+      const only = botsRes.data[0].id;
+      const usedCfg = must(await sb.from('configs').select('key').eq('bot_id', only).limit(1));
+      const usedPr = must(await sb.from('products').select('id').eq('bot_id', only).limit(1));
+      if (!usedCfg.data.length && !usedPr.data.length) {
+        botId = only;
+        must(await sb.from('bots').update({ name: g('businessName').slice(0, 120) || 'Unang bot' }).eq('id', botId));
+      }
+    }
+    if (!botId && createdBotId) {
+      // nag-retry pagkatapos ng error: gamitin ulit ang bot na nagawa kanina, para walang doble
+      botId = createdBotId;
+      must(await sb.from('products').delete().eq('bot_id', botId));
+    }
+    if (!botId) botId = must(await sb.rpc('create_bot', { p_name: g('businessName') })).data;
+    createdBotId = botId;
+
+    loadingText.textContent = 'Sine-save ang business info...';
+    const pay = [];
+    if (g('gcashNumber')) pay.push({ type: 'gcash', number: g('gcashNumber'), name: g('gcashName') });
+    if (g('mayaNumber')) pay.push({ type: 'maya', number: g('mayaNumber') });
+    if (/^https?:\/\//i.test(g('paypalLink'))) pay.push({ type: 'paypal', link: g('paypalLink') });
+    const cfg = {
+      brandName: g('businessName'), heroText: g('headline'), tagline: g('tagline'), businessDesc: g('description'),
+      lang: g('language'), botName: g('botName'), botPersonality: g('botPersonality'), payMethods: JSON.stringify(pay)
+    };
+    must(await sb.from('configs').upsert(Object.keys(cfg).map(k => ({ bot_id: botId, key: k, value: cfg[k] })), { onConflict: 'bot_id,key' }));
+
+    loadingText.textContent = 'Sine-save ang products...';
+    const items = Array.from(document.querySelectorAll('.product-item')).map((el, i) => ({
+      name: el.querySelector('.product-name').value.trim(),
+      price: el.querySelector('.product-price').value.trim(),
+      description: el.querySelector('.product-desc').value.trim(),
+      display_order: i,
+      bot_id: botId
+    })).filter(p => p.name);
+    if (items.length) must(await sb.from('products').insert(items));
+
+    loadingText.textContent = 'Kinokonekta ang AI...';
+    if (g('apiKey')) {
+      // walang shared key pa -> gawing shared (para magamit ng lahat ng bots); kung meron na -> para sa bot na ito lang
+      const shared = await sb.rpc('has_secret', { p_key: 'gemini_key' });
+      const keyName = shared.data ? 'gemini_key:' + botId : 'gemini_key';
+      must(await sb.rpc('set_secret', { p_key: keyName, p_value: g('apiKey') }));
+    }
+    must(await sb.rpc('set_secret', { p_key: 'owner_contact', p_value: JSON.stringify({ name: g('ownerName'), email: g('email'), phone: g('phone') }) }));
+
+    await sb.auth.signOut();
+    // walang sine-save na password o API key sa browser
+    try { localStorage.removeItem('ai_employee_draft'); } catch (e) {}
+
+    const base = location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/, '');
+    document.getElementById('botLink').textContent = base + 'index.html?tid=' + botId + cQ('&');
+    document.getElementById('adminLink').textContent = base + 'index.html?admin=1&tid=' + botId + cQ('&');
+    document.getElementById('apiKey').value = '';
+    document.getElementById('adminPassword').value = '';
+    const firstName = g('ownerName').split(' ')[0];
+    document.getElementById('hiredGreeting').textContent = firstName ? `Nice work, ${firstName} — your AI employee is hired` : 'Your AI employee is hired';
+    overlay.classList.remove('active');
+    btnGroup.style.display = '';
+    showStep(5);
+  } catch (err) {
+    fail('May problema: ' + (err && err.message ? err.message : err));
+  }
+}
+
+function startAnotherBot() {
+  try { localStorage.removeItem('ai_employee_draft'); } catch (e) {}
+  location.href = location.pathname + cQ('?');
+}
+
+function copyToClipboard(elementId) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Link copied to clipboard');
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+    showToast('Could not copy — please copy manually');
+  });
+}
+
+document.querySelectorAll('input, textarea, select').forEach(field => {
+  field.addEventListener('input', function() {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(saveFormData, 1000);
+  });
+});
+
+/* ---------- Inline validation checkmarks ---------- */
+const validatedFieldIds = ['ownerName', 'businessName', 'email', 'botName', 'headline', 'description'];
+function refreshFieldCheck(id) {
+  const field = document.getElementById(id);
+  const wrap = document.getElementById('wrap-' + id);
+  if (!field || !wrap) return;
+  let valid = field.value.trim().length > 0;
+  if (id === 'email' && valid) {
+    valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim());
+  }
+  wrap.classList.toggle('valid', valid);
+}
+validatedFieldIds.forEach(id => {
+  const field = document.getElementById(id);
+  if (field) field.addEventListener('input', () => refreshFieldCheck(id));
+});
+
+/* ---------- Live preview panel ---------- */
+function updatePreview() {
+  const bizName = document.getElementById('businessName')?.value.trim();
+  const botName = document.getElementById('botName')?.value.trim();
+  const headline = document.getElementById('headline')?.value.trim();
+
+  const avatar = document.getElementById('previewAvatar');
+  const nameEl = document.getElementById('previewName');
+  const textEl = document.getElementById('previewText');
+  if (!avatar || !nameEl || !textEl) return;
+
+  avatar.textContent = (botName || 'A').trim().charAt(0).toUpperCase();
+  nameEl.textContent = botName || 'Your employee';
+
+  if (headline || bizName) {
+    textEl.classList.remove('preview-empty');
+    textEl.textContent = `Hi! I'm ${botName || 'your assistant'} from ${bizName || 'your business'}. ${headline || ''}`.trim();
+  } else {
+    textEl.classList.add('preview-empty');
+    textEl.textContent = 'Fill in your business name and headline to see a preview here.';
+  }
+}
+['businessName', 'botName', 'headline'].forEach(id => {
+  const field = document.getElementById(id);
+  if (field) field.addEventListener('input', updatePreview);
+});
+
+/* ---------- Character counters ---------- */
+function bindCharCounter(fieldId, countId, max) {
+  const field = document.getElementById(fieldId);
+  const countEl = document.getElementById(countId);
+  if (!field || !countEl) return;
+  const update = () => {
+    const len = field.value.length;
+    countEl.textContent = `${len} / ${max} characters`;
+    countEl.classList.toggle('warn', len > max);
+  };
+  field.addEventListener('input', update);
+  update();
+}
+bindCharCounter('headline', 'headlineCount', 60);
+bindCharCounter('description', 'descriptionCount', 400);
+
+function saveFormData() {
+  const formData = {
+    ownerName: document.getElementById('ownerName')?.value || '',
+    businessName: document.getElementById('businessName')?.value || '',
+    email: document.getElementById('email')?.value || '',
+    botName: document.getElementById('botName')?.value || '',
+    language: document.getElementById('language')?.value || '',
+    headline: document.getElementById('headline')?.value || '',
+    tagline: document.getElementById('tagline')?.value || '',
+    description: document.getElementById('description')?.value || '',
+    step: currentStep
+  };
+
+  localStorage.setItem('ai_employee_draft', JSON.stringify(formData));
+
+  const indicator = document.getElementById('saveIndicator');
+  indicator.classList.add('show');
+  setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+function loadSavedData() {
+  const saved = localStorage.getItem('ai_employee_draft');
+  if (saved) {
+    const data = JSON.parse(saved);
+    if (data.ownerName) document.getElementById('ownerName').value = data.ownerName;
+    if (data.businessName) document.getElementById('businessName').value = data.businessName;
+    if (data.email) document.getElementById('email').value = data.email;
+    if (data.botName) document.getElementById('botName').value = data.botName;
+    if (data.language) document.getElementById('language').value = data.language;
+    if (data.headline) document.getElementById('headline').value = data.headline;
+    if (data.tagline) document.getElementById('tagline').value = data.tagline;
+    if (data.description) document.getElementById('description').value = data.description;
+    if (data.step) showStep(data.step);
+    validatedFieldIds.forEach(id => refreshFieldCheck(id));
+    updatePreview();
+  }
+}
+
+function showAIHelper(fieldType) {
+  const modal = document.getElementById('aiModal');
+  const typeSpan = document.getElementById('aiFieldType');
+  const headlineBox = document.getElementById('headlinePrompt');
+  const descBox = document.getElementById('descPrompt');
+
+  if (fieldType === 'headline') {
+    typeSpan.textContent = 'headline';
+    headlineBox.style.display = 'block';
+    descBox.style.display = 'none';
+  } else if (fieldType === 'description') {
+    typeSpan.textContent = 'description';
+    headlineBox.style.display = 'none';
+    descBox.style.display = 'block';
+  }
+
+  modal.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('aiModal').classList.remove('active');
+}
+
+initTheme();
+window.addEventListener('DOMContentLoaded', loadSavedData);
+
+document.getElementById('aiModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+showStep(1);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pahina AI</title>
+<style>
+:root{
+  --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Inter, sans-serif;
+  --sans-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Inter, sans-serif;
+}
+
+html[data-theme="light"]{
+  --bg: #F7F2E9;
+  --card: #ffffff;
+  --card-2: #FBF7EF;
+  --text: #2A1F3D;
+  --text-soft: #6B5D7A;
+  --text-faint: #948699;
+  --line: rgba(74,44,107,0.10);
+  --line-soft: rgba(74,44,107,0.06);
+  --accent: #6B3FA0;
+  --accent-hover: #7C4CB3;
+  --accent-tint: rgba(107,63,160,0.08);
+  --gold: #9C7A25;
+  --gold-tint: rgba(156,122,37,0.10);
+  --danger: #C0392B;
+  --input-bg: #ffffff;
+  --shadow: 0 1px 2px rgba(74,44,107,0.05), 0 8px 30px rgba(74,44,107,0.07);
+  --rail-inactive: #E3D9C6;
+  --chat-bot-bubble: #F1EAF8;
+  --chat-user-bubble: #6B3FA0;
+}
+
+html[data-theme="dark"]{
+  --bg: #17111F;
+  --card: #241A32;
+  --card-2: #1D1428;
+  --text: #F5EFE3;
+  --text-soft: #C3B3D6;
+  --text-faint: #94879F;
+  --line: rgba(212,175,90,0.14);
+  --line-soft: rgba(245,239,227,0.06);
+  --accent: #C9A227;
+  --accent-hover: #DBB53A;
+  --accent-tint: rgba(201,162,39,0.14);
+  --gold: #D4AF5A;
+  --gold-tint: rgba(212,175,90,0.12);
+  --danger: #E5695B;
+  --input-bg: #2C2039;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 30px rgba(0,0,0,0.5);
+  --rail-inactive: #3C2E4D;
+  --chat-bot-bubble: #2C2039;
+  --chat-user-bubble: #C9A227;
+}
+
+*{ box-sizing: border-box; margin:0; padding:0; font-family: var(--sans); }
+body{ background: var(--bg); color: var(--text); line-height:1.55; transition: background .25s, color .25s; -webkit-font-smoothing:antialiased; }
+a{ color: var(--accent); }
+
+.container{ max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+.topbar{
+  position: sticky; top:0; z-index: 50; backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border-bottom: 1px solid var(--line-soft);
+  display:flex; align-items:center; justify-content:space-between; padding: 14px 24px;
+}
+.brand-mark{ font-family: var(--sans-display); font-weight:700; font-size:15px; letter-spacing:-0.01em; }
+.theme-toggle{ display:flex; align-items:center; background: var(--card); border:1px solid var(--line); border-radius:20px; padding:3px; gap:2px; }
+.theme-toggle button{ border:none; background:none; color: var(--text-soft); font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:17px; cursor:pointer; font-family: var(--sans); transition: all .2s; }
+.theme-toggle button.active{ background: var(--bg); color: var(--text); box-shadow: var(--shadow); }
+
+.hero{ text-align:center; padding: 90px 20px 60px; min-height: 50vh; display:flex; flex-direction:column; justify-content:center; }
+.hero h1, .hero p{ overflow-wrap:anywhere; }
+.hero h1{ font-family: var(--sans-display); font-size: clamp(30px, 5vw, 46px); font-weight:700; letter-spacing:-0.02em; margin-bottom:18px; }
+.hero p{ font-size: 18px; color: var(--text-soft); max-width: 560px; margin: 0 auto 36px; }
+
+.btn{ padding: 13px 26px; border-radius: 14px; font-weight:600; cursor:pointer; border:none; font-size:15px; text-decoration:none; display:inline-block; transition: all .2s; font-family: var(--sans); }
+.btn-accent{ background: var(--accent); color:#fff; }
+html[data-theme="dark"] .btn-accent{ color:#1C130A; }
+.btn-accent:hover{ background: var(--accent-hover); }
+.btn-outline{ background: var(--card); border:1px solid var(--line); color: var(--text); }
+.btn-outline:hover{ background: var(--card-2); }
+
+footer{ text-align:center; padding: 60px 20px; border-top:1px solid var(--line-soft); color: var(--text-soft); }
+footer h2{ font-family: var(--sans-display); color: var(--accent); margin-bottom:22px; font-size:20px; font-weight:600; }
+.social-links{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:22px; }
+.social-links a{ padding: 9px 16px; font-size:13px; border-radius:20px; }
+
+/* Chat widget */
+.chat-widget{
+  position: fixed; bottom: 20px; right: 20px; width: 372px; height: 560px;
+  background: var(--card); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  z-index: 1000; display:flex; flex-direction:column; border:1px solid var(--line);
+  animation: chatRise .3s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes chatRise{ from{ opacity:0; transform: translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
+.chat-header{ padding:16px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line-soft); }
+.chat-header-left{ display:flex; align-items:center; gap:10px; }
+.chat-avatar{ width:36px; height:36px; border-radius:50%; background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0; }
+html[data-theme="dark"] .chat-avatar{ color:#1C130A; }
+.bot-name{ font-weight:600; font-size:14.5px; }
+.bot-status{ color: #3FA05C; font-size:11.5px; display:flex; align-items:center; gap:5px; }
+.bot-status::before{ content:''; width:6px; height:6px; border-radius:50%; background:#3FA05C; display:inline-block; }
+.chat-close{ background:none; border:none; color: var(--text-faint); font-size:18px; cursor:pointer; width:28px; height:28px; border-radius:50%; }
+.chat-close:hover{ background: var(--card-2); }
+.chat-body{ flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
+.msg{ padding:11px 15px; border-radius:16px; max-width:85%; font-size:14px; word-wrap:break-word; line-height:1.5; }
+.msg.bot{ background: var(--chat-bot-bubble); color: var(--text); align-self:flex-start; border-bottom-left-radius:4px; }
+.msg.user{ background: var(--chat-user-bubble); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+html[data-theme="dark"] .msg.user{ color:#1C130A; }
+.chat-input-area{ padding:14px 16px; border-top:1px solid var(--line-soft); display:flex; gap:10px; }
+.chat-input-area input{ flex:1; background: var(--input-bg); border:1px solid var(--line); color: var(--text); padding:11px 14px; border-radius:12px; outline:none; font-size:14px; font-family: var(--sans); }
+.chat-input-area input:focus{ border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+.send-btn{ background: var(--accent); color:#fff; border:none; width:42px; border-radius:12px; cursor:pointer; font-weight:bold; font-size:16px; }
+html[data-theme="dark"] .send-btn{ color:#1C130A; }
+.quick-actions{ padding:10px 14px; display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid var(--line-soft); }
+.quick-actions button{ background: var(--card-2); color: var(--text); border:1px solid var(--line); padding:7px 13px; border-radius:20px; font-size:12px; cursor:pointer; font-family: var(--sans); }
+.quick-actions button:hover{ background: var(--line-soft); }
+.quick-actions a{ padding:7px 13px; font-size:12px; border-radius:20px; }
+.hidden{ display:none !important; }
+
+/* Floating chat launcher */
+.chat-fab{
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  display:flex; align-items:center; gap:10px;
+  background: var(--accent); color:#fff; border:none; border-radius: 30px;
+  padding: 14px 22px 14px 18px; font-size: 14.5px; font-weight:600; font-family: var(--sans);
+  cursor:pointer; box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  animation: fabPulse 2.4s ease-in-out 1.2s 3;
+}
+html[data-theme="dark"] .chat-fab{ color:#1C130A; }
+.chat-fab:hover{ background: var(--accent-hover); transform: translateY(-1px); }
+.chat-fab .fab-icon{ font-size:18px; line-height:1; }
+.chat-fab .fab-dot{
+  position:absolute; top:-3px; right:-3px; width:12px; height:12px; border-radius:50%;
+  background:#3FA05C; border: 2px solid var(--bg);
+}
+@keyframes fabPulse{
+  0%, 100%{ box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 0 0 0 var(--accent-tint); }
+  50%{ box-shadow: 0 12px 32px rgba(0,0,0,0.25), 0 0 0 12px transparent; }
+}
+@media (max-width: 480px){ .chat-fab span.fab-label{ display:none; } .chat-fab{ padding:15px; border-radius:50%; } }
+
+.contact-hint{ color: var(--text-faint); font-size:13px; margin-bottom:14px; }
+.contact-hint button{ background:none; border:none; color: var(--accent); font-weight:600; cursor:pointer; font-size:13px; font-family: var(--sans); padding:0; text-decoration: underline; }
+
+/* Admin */
+.admin-modal{ position:fixed; inset:0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display:flex; align-items:center; justify-content:center; z-index:2000; }
+.admin-login-card{ background: var(--card); padding: 40px; border-radius: 20px; border:1px solid var(--line); max-width:400px; width:90%; box-shadow: var(--shadow); }
+.admin-login-card h2{ font-family: var(--sans-display); color: var(--accent); margin-bottom:8px; text-align:center; font-size:22px; font-weight:700; }
+.admin-login-card p{ color: var(--text-soft); margin-bottom:22px; text-align:center; font-size:14px; }
+
+.admin-panel{ padding: 24px; min-height:100vh; }
+.admin-header{ background: var(--card); padding:20px 24px; border-radius:16px; border:1px solid var(--line-soft); margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow: var(--shadow); }
+.admin-header h2{ font-family: var(--sans-display); color: var(--text); margin:0; font-size:20px; font-weight:700; }
+.admin-grid{ display:grid; grid-template-columns: 230px 1fr; gap:20px; }
+@media (max-width: 800px){ .admin-grid{ grid-template-columns:1fr; } }
+
+.admin-sidebar{ background: var(--card); padding:16px; border-radius:16px; border:1px solid var(--line-soft); height:fit-content; position:sticky; top:20px; box-shadow: var(--shadow); }
+.admin-tab-btn{ display:flex; align-items:center; gap:10px; width:100%; padding:11px 13px; background:transparent; color: var(--text-soft); border:none; border-radius:11px; cursor:pointer; margin-bottom:4px; text-align:left; font-size:14px; font-weight:500; font-family: var(--sans); transition: all .15s; }
+.admin-tab-btn:hover{ background: var(--card-2); color: var(--text); }
+.admin-tab-btn.active{ background: var(--accent-tint); color: var(--accent); font-weight:600; }
+
+.admin-content{ background: var(--card); padding: 32px; border-radius:16px; border:1px solid var(--line-soft); box-shadow: var(--shadow); }
+.admin-input{ width:100%; padding:12px 14px; background: var(--input-bg); border:1px solid var(--line); color: var(--text); border-radius:12px; margin-bottom:16px; font-size:14.5px; font-family: var(--sans); transition: border-color .15s, box-shadow .15s; }
+.admin-input:focus{ outline:none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+.admin-label{ display:block; color: var(--text-soft); margin-bottom:7px; font-size:12.5px; font-weight:600; }
+.admin-section{ margin-bottom:32px; }
+.admin-section h3{ color: var(--accent); margin-bottom:20px; font-size:17px; font-family: var(--sans-display); font-weight:600; }
+.product-item{ background: var(--card-2); padding:20px; border-radius:14px; margin-bottom:14px; border:1px solid var(--line-soft); position:relative; }
+.remove-btn{ background: transparent; color: var(--danger); padding:5px 12px; border:1px solid var(--danger); border-radius:8px; cursor:pointer; font-size:12px; float:right; font-family: var(--sans); }
+.remove-btn:hover{ background: var(--danger); color:#fff; }
+.add-btn{ background: var(--card-2); color: var(--text); padding:11px 20px; border:1px solid var(--line); border-radius:12px; cursor:pointer; font-weight:600; margin-top:6px; font-family: var(--sans); }
+.add-btn:hover{ background: var(--line-soft); }
+.save-btn{ background: var(--accent); color:#fff; padding:12px 24px; border:none; border-radius:12px; font-weight:600; cursor:pointer; margin-right:10px; font-family: var(--sans); min-width: 130px; transition: opacity .15s; }
+html[data-theme="dark"] .save-btn{ color:#1C130A; }
+.save-btn:hover{ background: var(--accent-hover); }
+.save-btn:disabled{ opacity:.7; cursor:default; }
+.reload-btn{ background: transparent; border:1px solid var(--line); color: var(--text-soft); padding:12px 24px; border-radius:12px; cursor:pointer; font-family: var(--sans); }
+.reload-btn:hover{ background: var(--card-2); }
+
+.stats-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:28px; }
+.stat-card{ background: var(--card-2); padding:24px; border-radius:14px; border:1px solid var(--line-soft); text-align:center; }
+.stat-card .stat-value{ font-size:2.3rem; font-weight:700; color: var(--accent); margin-bottom:6px; font-family: var(--sans-display); }
+.stat-card .stat-label{ color: var(--text-faint); font-size:12.5px; letter-spacing:0.02em; }
+.analytics-chart{ background: var(--card-2); padding:24px; border-radius:14px; border:1px solid var(--line-soft); margin-top:18px; }
+.analytics-chart h4{ color: var(--accent); margin-bottom:18px; font-size:15px; font-family: var(--sans-display); font-weight:600; }
+.chart-bar{ height:28px; background: var(--accent); border-radius:8px; margin:10px 0; display:flex; align-items:center; padding:0 14px; color:#fff; font-weight:600; font-size:12.5px; transition: width .5s; }
+html[data-theme="dark"] .chart-bar{ color:#1C130A; }
+.chart-bar.purple{ background: #8B6FC4; }
+
+/* Toast */
+.toast{ position:fixed; bottom:28px; left:50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding:11px 22px; border-radius:12px; font-size:13.5px; font-weight:500; opacity:0; pointer-events:none; transition: all .25s ease; box-shadow: var(--shadow); z-index:3000; }
+.toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+.toast.error{ background: var(--danger); color:#fff; }
+
+/* Multi-bot */
+.admin-header-left{ display:flex; flex-direction:column; gap:8px; }
+.bot-switch-wrap{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.bot-switch-wrap label{ font-size:12px; color: var(--text-faint); font-weight:600; }
+.bot-switch-wrap select{ background: var(--input-bg); color: var(--text); border:1px solid var(--line); border-radius:10px; padding:7px 10px; font-size:13.5px; font-family: var(--sans); max-width:260px; }
+.tab-help{ font-size:12.5px; color: var(--text-soft); margin: -8px 0 16px; }
+.create-bot{ background: var(--accent-tint); border-radius:14px; padding:18px; margin-bottom:22px; }
+.create-row{ display:flex; gap:10px; flex-wrap:wrap; }
+.create-row .admin-input{ flex:1; min-width:200px; margin-bottom:0; }
+.create-bot .tab-help{ margin:10px 0 0; }
+.bot-card{ background: var(--card-2); border:1px solid var(--line-soft); border-radius:14px; padding:18px; margin-bottom:14px; }
+.bot-card.current{ border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+.bot-card-top{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.bot-card-name{ font-weight:700; font-size:15.5px; }
+.badge{ font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; background: var(--gold-tint); color: var(--gold); }
+.badge.editing{ background: var(--accent-tint); color: var(--accent); }
+.bot-link{ display:block; background: var(--input-bg); border:1px solid var(--line); border-radius:10px; padding:9px 11px; font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size:12px; color: var(--text-soft); word-break:break-all; margin-bottom:12px; }
+.bot-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.mini-btn{ background: var(--card); border:1px solid var(--line); color: var(--text); padding:7px 12px; border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer; font-family: var(--sans); }
+.mini-btn:hover{ background: var(--line-soft); }
+.mini-btn.primary{ background: var(--accent); border-color: var(--accent); color:#fff; }
+html[data-theme="dark"] .mini-btn.primary{ color:#1C130A; }
+.mini-btn.danger{ color: var(--danger); border-color: var(--danger); background: transparent; }
+.share-panel{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft); }
+.share-panel ol{ padding-left:18px; font-size:12.5px; color: var(--text-soft); margin-bottom:12px; }
+.member-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--line-soft); font-size:13.5px; }
+.inline-link{ background:none; border:none; color: var(--accent); font-weight:600; cursor:pointer; font-size:12px; padding:0; text-decoration:underline; font-family: var(--sans); }
+body.role-member .owner-only{ display:none !important; }
+
+@media (max-width: 768px){ .chat-widget{ width:100%; height:100%; bottom:0; right:0; border-radius:0; } }
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div id="setup-needed" class="admin-modal hidden" style="z-index:5000;">
+  <div class="admin-login-card">
+    <h2>Hindi pa naka-connect</h2>
+    <p>Buksan ang <b>index.html</b> sa text editor at palitan ang dalawang value sa <b>CONFIG</b> sa itaas ng script: ang Supabase URL at ang anon key. O i-download ulit ang files mula sa guide (Step 7).</p>
+  </div>
+</div>
+
+<div id="storefront-view">
+  <div class="topbar">
+    <div class="brand-mark" id="brand-mark">Pahina AI</div>
+    <div class="theme-toggle" id="themeToggle">
+      <button type="button" data-theme-choice="light">Light</button>
+      <button type="button" data-theme-choice="dark">Dark</button>
+    </div>
+  </div>
+
+  <div class="hero container">
+    <h1 id="hero-title">Welcome!</h1>
+    <p id="hero-sub">Your AI assistant is ready to help you 24/7.</p>
+    <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+      <button onclick="openChat()" class="btn btn-accent">Chat with us now</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <h2>Reach us anywhere</h2>
+      <p class="contact-hint">Have a question? <button type="button" onclick="openChat()">Chat with us</button> for the fastest reply — or use these instead:</p>
+      <div id="social-links" class="social-links"></div>
+      <p id="footer-text" style="color: var(--text-faint); font-size:13px;"></p>
+    </div>
+  </footer>
+
+  <button type="button" class="chat-fab" id="chatFab" onclick="openChat()">
+    <span class="fab-icon">💬</span>
+    <span class="fab-label">Chat with us</span>
+  </button>
+
+  <div id="chat-widget" class="chat-widget hidden">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar" id="chat-avatar">A</div>
+        <div>
+          <div class="bot-name" id="bot-name">AI Assistant</div>
+          <div class="bot-status">Online, ready to help</div>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="chat-close" aria-label="Close chat">&times;</button>
+    </div>
+    <div class="chat-body" id="chat-body">
+      <div class="msg bot" id="welcome-msg">Hi! How can I help you today?</div>
+    </div>
+    <div class="quick-actions">
+      <button onclick="sendQuickReply('How does this work?')">How it works</button>
+      <button onclick="sendQuickReply('What are your products and prices?')">Packages</button>
+      <button onclick="sendQuickReply('What are your FAQs?')">FAQ</button>
+      <button onclick="showLeadForm()" style="background: var(--accent-tint); color: var(--accent); border-color: var(--accent-tint);">Leave details</button>
+      <a id="visit-shop" href="#" target="_blank" rel="noopener" class="btn btn-accent hidden" style="padding:7px 13px; font-size:12px; text-decoration:none;">Visit shop</a>
+    </div>
+    <div id="lead-form-container" class="hidden" style="padding:16px; border-top:1px solid var(--line-soft); background: var(--card-2);">
+      <p style="color: var(--text); font-size:13.5px; margin-bottom:10px;">Leave your details and we'll contact you:</p>
+      <input type="text" id="lead-name" placeholder="Your name" maxlength="120" class="admin-input" style="margin-bottom:8px; padding:10px;">
+      <input type="email" id="lead-email" placeholder="Email address" maxlength="200" class="admin-input" style="margin-bottom:8px; padding:10px;">
+      <input type="tel" id="lead-phone" placeholder="Phone number (optional)" maxlength="60" class="admin-input" style="margin-bottom:10px; padding:10px;">
+      <div style="display:flex; gap:10px;">
+        <button onclick="submitLead()" class="btn btn-accent" style="flex:1; padding:10px; font-size:14px;">Submit</button>
+        <button onclick="hideLeadForm()" class="btn btn-outline" style="flex:1; padding:10px; font-size:14px;">Cancel</button>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" maxlength="1000" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()">
+      <button class="send-btn" onclick="sendMessage()" aria-label="Send">→</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-login" class="admin-modal hidden">
+  <div class="admin-login-card">
+    <h2>Admin panel</h2>
+    <p>Mag-login gamit ang email at password mo.</p>
+    <input type="email" id="admin-email" placeholder="Admin email" class="admin-input" autocomplete="username">
+    <input type="password" id="admin-password" placeholder="Password" class="admin-input" autocomplete="current-password" onkeypress="if(event.key==='Enter') adminLogin()">
+    <button onclick="adminLogin()" class="btn btn-accent" style="width:100%; margin-bottom:10px;">Login</button>
+    <button onclick="closeAdminLogin()" class="btn btn-outline" style="width:100%;">Back to store</button>
+  </div>
+</div>
+
+<div id="admin-panel" class="admin-panel hidden">
+  <div class="admin-header">
+    <div class="admin-header-left">
+      <h2>Admin panel</h2>
+      <div class="bot-switch-wrap">
+        <label for="bot-switch">Bot na ine-edit:</label>
+        <select id="bot-switch" onchange="switchBot(this.value)"></select>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div class="theme-toggle" id="themeToggleAdmin">
+        <button type="button" data-theme-choice="light">Light</button>
+        <button type="button" data-theme-choice="dark">Dark</button>
+      </div>
+      <button onclick="adminLogout()" class="btn btn-outline">Logout</button>
+      <button onclick="showStorefront()" class="btn btn-accent">View this bot</button>
+    </div>
+  </div>
+  <div class="admin-grid">
+    <div class="admin-sidebar" id="admin-sidebar">
+      <button onclick="switchTab('bots')" class="admin-tab-btn active" data-tab="bots">My Bots</button>
+      <button onclick="switchTab('config')" class="admin-tab-btn" data-tab="config">Config</button>
+      <button onclick="switchTab('products')" class="admin-tab-btn" data-tab="products">Products</button>
+      <button onclick="switchTab('payment')" class="admin-tab-btn" data-tab="payment">Payment</button>
+      <button onclick="switchTab('social')" class="admin-tab-btn" data-tab="social">Social links</button>
+      <button onclick="switchTab('bot')" class="admin-tab-btn" data-tab="bot">Bot settings</button>
+      <button onclick="switchTab('leads')" class="admin-tab-btn" data-tab="leads">Leads</button>
+      <button onclick="switchTab('analytics')" class="admin-tab-btn" data-tab="analytics">Analytics</button>
+      <button onclick="switchTab('settings')" class="admin-tab-btn" data-tab="settings">Settings</button>
+    </div>
+    <div class="admin-content">
+      <div id="tab-bots">
+        <div class="admin-section">
+          <h3>My Bots</h3>
+          <p class="tab-help">Bawat bot ay may sariling business info, products, payment, personality at link. Pindutin ang <b>Edit</b> sa isang bot, tapos gamitin ang mga tab sa kaliwa (Config, Products, atbp.).</p>
+          <div class="create-bot owner-only">
+            <label class="admin-label" for="new-bot-name">Gumawa ng bagong bot</label>
+            <div class="create-row">
+              <input type="text" id="new-bot-name" class="admin-input" maxlength="120" placeholder="Pangalan ng negosyo o client, hal. VIP ROI Framework" onkeypress="if(event.key==='Enter') createBot($('create-bot-btn'))">
+              <button type="button" id="create-bot-btn" onclick="createBot(this)" class="save-btn">+ Create new bot</button>
+            </div>
+            <p class="tab-help">Laging <b>bagong</b> bot ito, hindi nito papalitan ang mga dati mo. Puwede mo ring gamitin ang <a href="setup.html" target="_blank" rel="noopener">Setup Wizard</a> para sa step-by-step.</p>
+          </div>
+          <div id="bots-list"><p style="color: var(--text-faint);">Loading bots...</p></div>
+        </div>
+      </div>
+      <div id="tab-config" class="hidden">
+        <div class="admin-section">
+          <h3>Business information</h3>
+          <label class="admin-label">Brand / business name</label>
+          <input type="text" id="cfg-brandName" class="admin-input" placeholder="Your business name">
+          <label class="admin-label">Hero headline</label>
+          <input type="text" id="cfg-heroText" class="admin-input" placeholder="e.g., Your business, working 24/7">
+          <label class="admin-label">Tagline / sub-headline</label>
+          <input type="text" id="cfg-tagline" class="admin-input" placeholder="e.g., An assistant that sells for you">
+          <label class="admin-label">Business description (nababasa ng AI)</label>
+          <textarea id="cfg-businessDesc" rows="3" class="admin-input" placeholder="What you sell, who buys it, what makes you different..."></textarea>
+          <label class="admin-label">Language</label>
+          <select id="cfg-lang" class="admin-input">
+            <option value="en">English</option>
+            <option value="tl">Taglish (Filipino + English)</option>
+          </select>
+        </div>
+        <div class="admin-section">
+          <h3>AI employee</h3>
+          <label class="admin-label">Employee name</label>
+          <input type="text" id="cfg-botName" class="admin-input" placeholder="e.g., Alex, Sarah">
+          <label class="admin-label">Gemini API key ng bot na ito <span style="font-weight:400;">(optional — kung blangko, gagamitin ang shared key sa Settings)</span></label>
+          <input type="password" id="cfg-apiKey" class="admin-input" placeholder="Paste a key para sa bot na ito lang" autocomplete="new-password">
+          <p id="cfg-apiKey-status" style="font-size:12px;color:var(--text-faint);margin:-8px 0 16px;"></p>
+          <label class="admin-label">Gemini model ng bot na ito <span style="font-weight:400;">(optional — iwanang blangko para awtomatiko)</span></label>
+          <input type="text" id="cfg-model" class="admin-input" placeholder="gemini-2.5-flash">
+          <label class="admin-label">Shop / website link <span style="font-weight:400;">(optional — lalabas bilang "Visit shop")</span></label>
+          <input type="url" id="cfg-shopUrl" class="admin-input" placeholder="https://your-shop.vercel.app">
+        </div>
+        <button onclick="saveAllConfig(this)" class="save-btn">Save all config</button>
+        <button onclick="loadConfig()" class="reload-btn">Reload</button>
+      </div>
+      <div id="tab-products" class="hidden">
+        <div class="admin-section">
+          <h3>Your products / services</h3>
+          <p style="font-size:12.5px;color:var(--text-soft);margin-bottom:14px;">Ito ang ginagamit ng AI na sagot sa presyo at features. Isulat ang bawat feature sa sariling linya.</p>
+          <div id="admin-products-container"></div>
+          <button onclick="addAdminProduct()" class="add-btn">+ Add new product</button>
+        </div>
+        <button onclick="saveProducts(this)" class="save-btn">Save products</button>
+      </div>
+      <div id="tab-payment" class="hidden">
+        <div class="admin-section">
+          <h3>Payment methods</h3>
+          <label class="admin-label">GCash number</label>
+          <input type="text" id="pay-gcash" class="admin-input" placeholder="09XXXXXXXXX">
+          <label class="admin-label">GCash account name</label>
+          <input type="text" id="pay-gcash-name" class="admin-input">
+          <label class="admin-label">Maya number</label>
+          <input type="text" id="pay-maya" class="admin-input" placeholder="09XXXXXXXXX">
+          <label class="admin-label">Maya account name</label>
+          <input type="text" id="pay-maya-name" class="admin-input">
+          <label class="admin-label">PayPal link</label>
+          <input type="url" id="pay-paypal" class="admin-input" placeholder="https://paypal.me/...">
+          <label class="admin-label">Other payment instructions</label>
+          <textarea id="pay-instructions" rows="3" class="admin-input"></textarea>
+        </div>
+        <button onclick="savePayment(this)" class="save-btn">Save payment</button>
+      </div>
+      <div id="tab-social" class="hidden">
+        <div class="admin-section">
+          <h3>Social media &amp; contact links</h3>
+          <label class="admin-label">Messenger link</label>
+          <input type="url" id="social-messenger" class="admin-input" placeholder="https://m.me/...">
+          <label class="admin-label">Facebook page</label>
+          <input type="url" id="social-facebook" class="admin-input" placeholder="https://facebook.com/...">
+          <label class="admin-label">Instagram</label>
+          <input type="url" id="social-instagram" class="admin-input" placeholder="https://instagram.com/...">
+          <label class="admin-label">TikTok</label>
+          <input type="url" id="social-tiktok" class="admin-input" placeholder="https://tiktok.com/@...">
+          <label class="admin-label">WhatsApp</label>
+          <input type="url" id="social-whatsapp" class="admin-input" placeholder="https://wa.me/...">
+          <label class="admin-label">Email</label>
+          <input type="email" id="social-email" class="admin-input">
+          <label class="admin-label">Website / shop</label>
+          <input type="url" id="social-website" class="admin-input" placeholder="https://...">
+        </div>
+        <button onclick="saveSocial(this)" class="save-btn">Save social links</button>
+      </div>
+      <div id="tab-bot" class="hidden">
+        <div class="admin-section">
+          <h3>Employee personality &amp; instructions</h3>
+          <label class="admin-label">Employee personality</label>
+          <select id="bot-personality" class="admin-input">
+            <option value="friendly">Friendly &amp; casual — most popular</option>
+            <option value="professional">Professional &amp; formal</option>
+            <option value="playful">Playful &amp; energetic</option>
+            <option value="expert">Expert &amp; authoritative</option>
+          </select>
+          <label class="admin-label">FAQs (frequently asked questions)</label>
+          <textarea id="bot-faqs" rows="6" class="admin-input" placeholder="Q: What are your hours?&#10;A: 8am to 8pm daily."></textarea>
+          <label class="admin-label">Additional instructions</label>
+          <textarea id="bot-instructions" rows="5" class="admin-input" placeholder="Hal. Mag-offer ng libreng consultation kapag nag-aalangan ang customer."></textarea>
+        </div>
+        <button onclick="saveBotSettings(this)" class="save-btn">Save bot settings</button>
+      </div>
+      <div id="tab-leads" class="hidden">
+        <div class="admin-section">
+          <h3>Captured leads</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+            <p style="color: var(--text-soft);">Customers who left their details:</p>
+            <button onclick="exportLeadsToCSV()" class="btn btn-outline" style="padding:9px 16px; font-size:13px;">Export to CSV</button>
+          </div>
+          <div id="leads-table-container" style="overflow-x:auto;">
+            <p style="color: var(--text-faint); text-align:center;">Loading leads...</p>
+          </div>
+        </div>
+      </div>
+      <div id="tab-analytics" class="hidden">
+        <div class="admin-section">
+          <h3>Analytics dashboard</h3>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value" id="stat-total-leads">0</div><div class="stat-label">Total leads</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-total-conversations">0</div><div class="stat-label">Conversations</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-conversion-rate">0%</div><div class="stat-label">Conversion rate</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-avg-messages">0</div><div class="stat-label">Avg messages / chat</div></div>
+          </div>
+          <div class="analytics-chart">
+            <h4>Recent activity (last 7 days)</h4>
+            <div id="activity-chart"></div>
+          </div>
+          <div class="analytics-chart" style="margin-top:20px;">
+            <h4>Peak hours</h4>
+            <div id="peak-hours-chart"></div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-settings" class="hidden">
+        <div class="admin-section">
+          <h3>Account</h3>
+          <label class="admin-label">Logged in as</label>
+          <input type="text" id="set-email" readonly class="admin-input" style="color: var(--text-faint);">
+          <label class="admin-label">New password (at least 10 characters)</label>
+          <input type="password" id="set-newpass" class="admin-input" autocomplete="new-password">
+          <button onclick="changePassword(this)" class="save-btn">Change password</button>
+        </div>
+        <div class="admin-section owner-only">
+          <h3>Shared Gemini key (para sa lahat ng bots)</h3>
+          <p class="tab-help" style="margin-top:-10px;">Gagamitin ito ng bawat bot na walang sariling key sa Config tab.</p>
+          <label class="admin-label">Shared Google Gemini API key</label>
+          <input type="password" id="set-sharedKey" class="admin-input" placeholder="Paste a new key to replace it" autocomplete="new-password">
+          <p id="set-sharedKey-status" style="font-size:12px;color:var(--text-faint);margin:-8px 0 16px;"></p>
+          <label class="admin-label">Shared Gemini model <span style="font-weight:400;">(optional)</span></label>
+          <input type="text" id="set-sharedModel" class="admin-input" placeholder="gemini-2.5-flash">
+          <button onclick="saveSharedKey(this)" class="save-btn">Save shared key</button>
+        </div>
+        <div class="admin-section">
+          <h3>Connection</h3>
+          <label class="admin-label">Supabase project</label>
+          <input type="text" id="set-project" readonly class="admin-input" style="color: var(--text-faint);">
+          <p style="font-size:12.5px;color:var(--text-soft);">Ang Gemini keys ay naka-save sa sarili mong Supabase project at hindi nakikita ng mga bisita.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* =====================================================================
+   CONFIG — PALITAN ITO (Supabase Dashboard -> Project Settings -> API)
+   Ang "anon" key ay PUBLIC by design. Huwag ilagay dito ang "service_role" key!
+   ===================================================================== */
+const CONFIG = {
+  SUPABASE_URL: 'PASTE_YOUR_SUPABASE_URL',
+  SUPABASE_ANON_KEY: 'PASTE_YOUR_ANON_KEY'
+};
+
+/* PAHINA CONNECT: a ?c= link carries the buyer's own Supabase project (public keys only).
+   With it, one hosted copy of Pahina AI works for every buyer. */
+const PAHINA_C = (function () { try { return new URLSearchParams(location.search).get('c') || ''; } catch (e) { return ''; } })();
+(function () {
+  if (!PAHINA_C) return;
+  try {
+    const j = JSON.parse(decodeURIComponent(escape(atob(PAHINA_C.replace(/-/g, '+').replace(/_/g, '/')))));
+    const sp = j && j.supabase;
+    if (sp && sp.url && sp.anonKey) { CONFIG.SUPABASE_URL = String(sp.url).trim().replace(/\/$/, ''); CONFIG.SUPABASE_ANON_KEY = String(sp.anonKey).trim(); }
+  } catch (e) { /* bad link: keep CONFIG */ }
+})();
+const cQ = (lead) => PAHINA_C ? (lead + 'c=' + encodeURIComponent(PAHINA_C)) : '';
+
+const urlParams = new URLSearchParams(window.location.search);
+window.isAdminView = urlParams.get('admin') === '1';
+const TID = (urlParams.get('tid') || urlParams.get('bot') || '').trim();
+let currentBotId = null;     // ang bot na ipinapakita / ine-edit
+let myRole = null;           // 'owner' | 'member'
+let botsList = [];
+window.configData = {};
+window.products = [];
+window.deletedProductIds = [];
+let sb = null;
+let chatHistory = [];
+let currentConversationId = null;
+let sending = false;
+
+/* ---------- helpers ---------- */
+function esc(v) {
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function safeUrl(u, allowMailto) {
+  u = String(u || '').trim();
+  if (/^https?:\/\//i.test(u)) return u;
+  if (allowMailto && /^mailto:/i.test(u)) return u;
+  return '';
+}
+function $(id) { return document.getElementById(id); }
+function setVal(id, val) { const el = $(id); if (el && val !== undefined && val !== null) el.value = val; }
+
+/* ---------- Theme ---------- */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-toggle button').forEach(btn => btn.classList.toggle('active', btn.dataset.themeChoice === theme));
+  try { localStorage.setItem('ai_employee_theme', theme); } catch (e) {}
+}
+function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('ai_employee_theme'); } catch (e) {}
+  if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(saved);
+}
+document.querySelectorAll('.theme-toggle').forEach(toggle => {
+  toggle.addEventListener('click', function (e) {
+    const btn = e.target.closest('button[data-theme-choice]');
+    if (btn) applyTheme(btn.dataset.themeChoice);
+  });
+});
+
+/* ---------- Toast + save state ---------- */
+function showToast(message, isError) {
+  const toast = $('toast');
+  toast.textContent = message;
+  toast.classList.toggle('error', !!isError);
+  toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove('show'), 2600);
+}
+async function withSaving(btn, fn) {
+  const original = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+  try {
+    await fn();
+    if (btn) { btn.textContent = 'Saved'; setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 1200); }
+  } catch (err) {
+    if (btn) { btn.textContent = original; btn.disabled = false; }
+    showToast('Error: ' + (err && err.message ? err.message : err), true);
+  }
+}
+function must(res) { if (res && res.error) throw new Error(res.error.message); return res; }
+
+/* ---------- Start ---------- */
+document.addEventListener('DOMContentLoaded', async function () {
+  initTheme();
+  if (/^PASTE_/.test(CONFIG.SUPABASE_URL) || /^PASTE_/.test(CONFIG.SUPABASE_ANON_KEY) || !window.supabase) {
+    $('setup-needed').classList.remove('hidden'); $('setup-needed').style.display = 'flex';
+    return;
+  }
+  sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+  currentBotId = await resolveBot(TID);
+  await loadPublicConfig();
+  if (window.isAdminView) {
+    $('storefront-view').classList.add('hidden');
+    const { data } = await sb.auth.getSession();
+    if (data && data.session) { openAdminPanel(); }
+    else { const m = $('admin-login'); m.classList.remove('hidden'); m.style.display = 'flex'; }
+  } else {
+    startConversation();
+    // ?chat=1 → buksan agad ang chat (hal. galing sa button sa Messenger / Botcake)
+    if (urlParams.get('chat') === '1') toggleChat(true);
+  }
+});
+
+async function resolveBot(tid) {
+  try {
+    const { data, error } = await sb.rpc('resolve_bot', { p_tid: tid || null });
+    if (!error && data) return data;
+    console.error('resolve_bot', error);
+  } catch (err) { console.error(err); }
+  return null;
+}
+
+async function loadPublicConfig() {
+  try {
+    window.configData = {};
+    window.products = [];
+    if (!currentBotId) { applyConfig(); return; }
+    const cfg = await sb.from('configs').select('key,value').eq('bot_id', currentBotId);
+    (cfg.data || []).forEach(r => { if (r.key) window.configData[r.key] = r.value; });
+    const pr = await sb.from('products').select('*').eq('bot_id', currentBotId).order('display_order', { ascending: true });
+    window.products = pr.data || [];
+    applyConfig();
+  } catch (err) { console.error(err); }
+}
+
+function applyConfig() {
+  const c = window.configData;
+  $('hero-title').textContent = c.heroText || 'Welcome!';
+  $('hero-sub').textContent = c.tagline || 'Your AI assistant is ready to help you 24/7.';
+  if (c.brandName) { $('brand-mark').textContent = c.brandName; document.title = c.brandName; }
+  $('bot-name').textContent = c.botName || 'AI Assistant';
+  $('chat-avatar').textContent = (c.botName || 'A').trim().charAt(0).toUpperCase();
+  $('welcome-msg').textContent = c.botName
+    ? `Hi! I'm ${c.botName} from ${c.brandName || 'our store'}. How can I help you today?`
+    : 'Hi! How can I help you today?';
+  $('footer-text').textContent = `© ${new Date().getFullYear()} ${c.brandName || ''}`.trim();
+  const shop = safeUrl(c.shopUrl);
+  const visit = $('visit-shop');
+  if (shop) { visit.href = shop; visit.classList.remove('hidden'); } else { visit.classList.add('hidden'); }
+  const container = $('social-links');
+  container.textContent = '';
+  try {
+    JSON.parse(c.socialLinks || '[]').forEach(function (link) {
+      let href = link.type === 'email' ? (link.url ? 'mailto:' + String(link.url).replace(/[^\w.+@-]/g, '') : '') : safeUrl(link.url);
+      if (!href) return;
+      const a = document.createElement('a');
+      a.href = href; a.className = 'btn btn-outline'; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = String(link.type || '').charAt(0).toUpperCase() + String(link.type || '').slice(1);
+      container.appendChild(a);
+    });
+  } catch (e) {}
+}
+
+/* ---------- Chat ---------- */
+function openChat() { toggleChat(true); setTimeout(() => $('chat-input').focus(), 300); }
+function toggleChat(forceOpen) {
+  const widget = $('chat-widget'), fab = $('chatFab');
+  const open = forceOpen === true ? true : widget.classList.contains('hidden');
+  widget.classList.toggle('hidden', !open);
+  if (fab) fab.classList.toggle('hidden', open);
+}
+async function startConversation() {
+  try {
+    const { data, error } = await sb.rpc('start_conversation', { p_bot: currentBotId });
+    if (!error && data) currentConversationId = data;
+  } catch (err) { console.error(err); }
+}
+function appendMsg(text, sender) {
+  const body = $('chat-body');
+  const div = document.createElement('div');
+  div.className = 'msg ' + sender;
+  if (sender === 'bot') {
+    // i-escape muna bago ang formatting — hindi pwedeng mag-inject ng HTML ang AI o ang bisita
+    div.innerHTML = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+  } else { div.textContent = text; }
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+  return div;
+}
+function sendQuickReply(text) { $('chat-input').value = text; sendMessage(); }
+async function sendMessage() {
+  const input = $('chat-input');
+  const msg = input.value.trim().slice(0, 1000);
+  if (!msg || sending) return;
+  appendMsg(msg, 'user');
+  chatHistory.push({ role: 'user', text: msg });
+  input.value = '';
+  sending = true;
+  const thinking = appendMsg('Thinking...', 'bot');
+  try {
+    const { data, error } = await sb.functions.invoke('chat', {
+      body: { messages: chatHistory.slice(-12), conversation_id: currentConversationId, bot_id: currentBotId }
+    });
+    if (thinking.parentNode) thinking.remove();
+    if (error || !data || !data.reply) {
+      appendMsg('Pasensya, hindi available ang AI ngayon. Paki-tap ang "Leave details" at babalikan ka namin.', 'bot');
+    } else {
+      appendMsg(data.reply, 'bot');
+      chatHistory.push({ role: 'model', text: data.reply });
+    }
+  } catch (e) {
+    if (thinking.parentNode) thinking.remove();
+    appendMsg('Pasensya, may problema sa connection. Subukan ulit.', 'bot');
+  }
+  sending = false;
+}
+
+function showLeadForm() { $('lead-form-container').classList.remove('hidden'); }
+function hideLeadForm() { $('lead-form-container').classList.add('hidden'); }
+async function submitLead() {
+  const name = $('lead-name').value.trim();
+  const email = $('lead-email').value.trim();
+  const phone = $('lead-phone').value.trim();
+  if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showToast('Please enter your name and a valid email.', true); return; }
+  try {
+    must(await sb.rpc('submit_lead', { p_name: name, p_email: email, p_phone: phone, p_conversation: currentConversationId, p_bot: currentBotId }));
+    hideLeadForm();
+    appendMsg(`Thanks ${name}! We'll contact you at ${email} soon.`, 'bot');
+    $('lead-name').value = ''; $('lead-email').value = ''; $('lead-phone').value = '';
+  } catch (err) { showToast('Error: ' + err.message, true); }
+}
+
+/* ---------- Admin auth ---------- */
+async function adminLogin() {
+  const email = $('admin-email').value.trim();
+  const password = $('admin-password').value;
+  if (!email || !password) { showToast('Ilagay ang email at password.', true); return; }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error || !data.session) { showToast('Mali ang email o password.', true); return; }
+  $('admin-password').value = '';
+  const ok = await sb.rpc('my_role');
+  if (!ok.data) { await sb.auth.signOut(); showToast('Walang access sa admin panel ang account na ito.', true); return; }
+  openAdminPanel();
+}
+async function openAdminPanel() {
+  const ok = await sb.rpc('my_role');
+  if (!ok.data) {
+    await sb.auth.signOut();
+    if (ok.error) showToast('Error: ' + ok.error.message + ' (na-run mo na ba ang upgrade SQL?)', true);
+    const m = $('admin-login'); m.classList.remove('hidden'); m.style.display = 'flex'; return;
+  }
+  myRole = ok.data;
+  document.body.classList.toggle('role-member', myRole !== 'owner');
+  $('admin-login').classList.add('hidden'); $('admin-login').style.display = '';
+  $('admin-panel').classList.remove('hidden');
+  await loadBots();
+  const pick = botsList.find(b => b.id === TID) || botsList.find(b => b.id === currentBotId) || botsList.find(b => b.is_default) || botsList[0];
+  if (!pick) { showToast('Walang bot na naka-share sa account na ito.', true); return; }
+  await switchBot(pick.id, true);
+  switchTab(myRole === 'owner' || botsList.length > 1 ? 'bots' : 'config');
+}
+function closeAdminLogin() {
+  $('admin-login').classList.add('hidden'); $('admin-login').style.display = '';
+  $('storefront-view').classList.remove('hidden');
+  if (!currentConversationId) startConversation();
+}
+async function adminLogout() {
+  await sb.auth.signOut();
+  $('admin-panel').classList.add('hidden');
+  const m = $('admin-login'); m.classList.remove('hidden'); m.style.display = 'flex';
+}
+function showStorefront() {
+  // buksan ang chat page ng bot na ine-edit
+  location.href = botLink(currentBotId);
+}
+async function changePassword(btn) {
+  await withSaving(btn, async () => {
+    const p = $('set-newpass').value;
+    if (p.length < 10) throw new Error('Gawing at least 10 characters ang password.');
+    must(await sb.auth.updateUser({ password: p }));
+    $('set-newpass').value = '';
+    showToast('Napalitan ang password');
+  });
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll('.admin-content > div').forEach(t => t.classList.add('hidden'));
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  $('tab-' + tabName).classList.remove('hidden');
+  const btn = document.querySelector('.admin-tab-btn[data-tab="' + tabName + '"]');
+  if (btn) btn.classList.add('active');
+  $('admin-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (tabName === 'bots') renderBots();
+  if (tabName === 'products') renderAdminProducts();
+  if (tabName === 'leads') loadLeads();
+  if (tabName === 'analytics') loadAnalytics();
+}
+
+/* ---------- Admin: load all fields ---------- */
+async function loadConfig() {
+  await loadPublicConfig();
+  const c = window.configData;
+  // linisin muna ang mga field para hindi madala ang laman ng ibang bot
+  document.querySelectorAll('#admin-panel input:not([readonly]), #admin-panel textarea').forEach(el => { if (el.id !== 'new-bot-name') el.value = ''; });
+  setVal('cfg-brandName', c.brandName); setVal('cfg-heroText', c.heroText); setVal('cfg-tagline', c.tagline);
+  setVal('cfg-businessDesc', c.businessDesc); setVal('cfg-lang', c.lang || 'en'); setVal('cfg-botName', c.botName);
+  setVal('cfg-shopUrl', c.shopUrl);
+  setVal('bot-personality', c.botPersonality || 'friendly'); setVal('bot-faqs', c.faqs); setVal('bot-instructions', c.botExtra);
+  setVal('pay-instructions', c.payInstructions);
+  try {
+    JSON.parse(c.payMethods || '[]').forEach(m => {
+      if (m.type === 'gcash') { setVal('pay-gcash', m.number); setVal('pay-gcash-name', m.name); }
+      if (m.type === 'maya') { setVal('pay-maya', m.number); setVal('pay-maya-name', m.name); }
+      if (m.type === 'paypal') setVal('pay-paypal', m.link);
+    });
+  } catch (e) {}
+  try { JSON.parse(c.socialLinks || '[]').forEach(l => setVal('social-' + l.type, l.url)); } catch (e) {}
+  await refreshKeyStatus();
+  const { data } = await sb.auth.getSession();
+  setVal('set-email', data && data.session ? data.session.user.email : '');
+  setVal('set-project', CONFIG.SUPABASE_URL);
+  window.deletedProductIds = [];
+}
+
+async function upsertConfigs(pairs, botId) {
+  const bot = botId || currentBotId;
+  if (!bot) throw new Error('Walang napiling bot.');
+  const rows = Object.keys(pairs).map(k => ({ bot_id: bot, key: k, value: pairs[k] }));
+  must(await sb.from('configs').upsert(rows, { onConflict: 'bot_id,key' }));
+}
+
+/* ---------- Gemini keys ---------- */
+function botKey(name, botId) { return name + ':' + (botId || currentBotId); }
+async function refreshKeyStatus() {
+  const own = await sb.rpc('has_secret', { p_key: botKey('gemini_key') });
+  let shared = { data: false };
+  if (myRole === 'owner') shared = await sb.rpc('has_secret', { p_key: 'gemini_key' });
+  const st = $('cfg-apiKey-status');
+  st.textContent = '';
+  if (own.data) {
+    st.appendChild(document.createTextNode('✓ May sariling Gemini key ang bot na ito (hindi na ipinapakita). Maglagay ng bago para palitan. '));
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'inline-link'; rm.textContent = 'Alisin ang sariling key';
+    rm.onclick = removeBotKey;
+    st.appendChild(rm);
+  } else if (myRole === 'owner') {
+    st.textContent = shared.data
+      ? 'Walang sariling key ang bot na ito, kaya gagamitin nito ang shared key mo (Settings tab). Okay lang iyon.'
+      : 'Wala pang Gemini key. Maglagay dito, o sa Settings → Shared Gemini key para sa lahat ng bots.';
+  } else {
+    st.textContent = 'Walang sariling key ang bot na ito, kaya ang key ng owner ang gagamitin. Puwede kang maglagay ng sarili mo.';
+  }
+  if (myRole === 'owner') {
+    $('set-sharedKey-status').textContent = shared.data
+      ? '✓ May naka-save nang shared key (hindi na ito ipinapakita). Maglagay ng bago para palitan.'
+      : 'Wala pang shared key.';
+  }
+}
+async function removeBotKey() {
+  if (!confirm('Alisin ang sariling Gemini key ng bot na ito? Gagamitin na nito ang shared key.')) return;
+  try {
+    must(await sb.rpc('set_secret', { p_key: botKey('gemini_key'), p_value: '' }));
+    await refreshKeyStatus();
+    showToast('Inalis ang sariling key ng bot');
+  } catch (err) { showToast('Error: ' + err.message, true); }
+}
+async function saveSharedKey(btn) {
+  await withSaving(btn, async () => {
+    const key = $('set-sharedKey').value.trim();
+    if (key) must(await sb.rpc('set_secret', { p_key: 'gemini_key', p_value: key }));
+    must(await sb.rpc('set_secret', { p_key: 'gemini_model', p_value: $('set-sharedModel').value.trim() }));
+    $('set-sharedKey').value = '';
+    await refreshKeyStatus();
+    showToast('Shared key saved');
+  });
+}
+
+async function saveAllConfig(btn) {
+  await withSaving(btn, async () => {
+    await upsertConfigs({
+      brandName: $('cfg-brandName').value.trim(), heroText: $('cfg-heroText').value.trim(), tagline: $('cfg-tagline').value.trim(),
+      businessDesc: $('cfg-businessDesc').value.trim(), lang: $('cfg-lang').value, botName: $('cfg-botName').value.trim(),
+      shopUrl: safeUrl($('cfg-shopUrl').value)
+    });
+    const key = $('cfg-apiKey').value.trim();
+    if (key) { must(await sb.rpc('set_secret', { p_key: botKey('gemini_key'), p_value: key })); }
+    must(await sb.rpc('set_secret', { p_key: botKey('gemini_model'), p_value: $('cfg-model').value.trim() }));
+    await loadConfig();
+    showToast('Config saved');
+  });
+}
+
+/* ---------- Admin: products (DOM-built, walang HTML injection) ---------- */
+function syncProductsFromDom() {
+  const items = document.querySelectorAll('#admin-products-container .product-item');
+  if (!items.length && !document.querySelector('#admin-products-container')) return;
+  if (!items.length) return;
+  window.products = Array.from(items).map((el, i) => ({
+    id: el.dataset.id || undefined,
+    name: el.querySelector('.admin-product-name').value,
+    price: el.querySelector('.admin-product-price').value,
+    description: el.querySelector('.admin-product-desc').value,
+    display_order: i
+  }));
+}
+function renderAdminProducts() {
+  const container = $('admin-products-container');
+  container.textContent = '';
+  if (!window.products.length) {
+    const p = document.createElement('p');
+    p.style.cssText = 'color: var(--text-faint); margin-bottom: 20px;'; p.textContent = 'No products yet.';
+    container.appendChild(p); return;
+  }
+  window.products.forEach((pkg, index) => {
+    const el = document.createElement('div');
+    el.className = 'product-item';
+    if (pkg.id) el.dataset.id = pkg.id;
+    el.innerHTML = '<button type="button" class="remove-btn">Remove</button>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;padding-top:6px;">' +
+      '<div><label class="admin-label">Product name</label><input type="text" class="admin-product-name admin-input" maxlength="150"></div>' +
+      '<div><label class="admin-label">Price</label><input type="text" class="admin-product-price admin-input" maxlength="60"></div></div>' +
+      '<div><label class="admin-label">Description / features</label><textarea class="admin-product-desc admin-input" rows="3" maxlength="1500"></textarea></div>';
+    el.querySelector('.admin-product-name').value = pkg.name || '';
+    el.querySelector('.admin-product-price').value = pkg.price || '';
+    el.querySelector('.admin-product-desc').value = pkg.description || '';
+    el.querySelector('.remove-btn').onclick = () => removeProduct(index);
+    container.appendChild(el);
+  });
+}
+function addAdminProduct() { syncProductsFromDom(); window.products.push({ name: '', price: '', description: '' }); renderAdminProducts(); }
+function removeProduct(index) {
+  syncProductsFromDom();
+  const gone = window.products.splice(index, 1)[0];
+  if (gone && gone.id) window.deletedProductIds.push(gone.id);
+  renderAdminProducts();
+}
+async function saveProducts(btn) {
+  await withSaving(btn, async () => {
+    syncProductsFromDom();
+    const keep = window.products.filter(p => (p.name || '').trim());
+    if (window.deletedProductIds.length) {
+      must(await sb.from('products').delete().eq('bot_id', currentBotId).in('id', window.deletedProductIds));
+      window.deletedProductIds = [];
+    }
+    const existing = keep.filter(p => p.id).map(p => ({ id: p.id, bot_id: currentBotId, name: p.name.trim(), price: (p.price || '').trim(), description: p.description, display_order: keep.indexOf(p) }));
+    const fresh = keep.filter(p => !p.id).map(p => ({ bot_id: currentBotId, name: p.name.trim(), price: (p.price || '').trim(), description: p.description, display_order: keep.indexOf(p) }));
+    if (existing.length) must(await sb.from('products').upsert(existing, { onConflict: 'id' }));
+    if (fresh.length) must(await sb.from('products').insert(fresh));
+    const pr = await sb.from('products').select('*').eq('bot_id', currentBotId).order('display_order', { ascending: true });
+    window.products = pr.data || [];
+    renderAdminProducts();
+    showToast('Products saved');
+  });
+}
+
+async function savePayment(btn) {
+  await withSaving(btn, async () => {
+    const m = [];
+    if ($('pay-gcash').value.trim()) m.push({ type: 'gcash', number: $('pay-gcash').value.trim(), name: $('pay-gcash-name').value.trim() });
+    if ($('pay-maya').value.trim()) m.push({ type: 'maya', number: $('pay-maya').value.trim(), name: $('pay-maya-name').value.trim() });
+    const pp = safeUrl($('pay-paypal').value);
+    if (pp) m.push({ type: 'paypal', link: pp });
+    await upsertConfigs({ payMethods: JSON.stringify(m), payInstructions: $('pay-instructions').value.trim() });
+    showToast('Payment methods saved');
+  });
+}
+async function saveSocial(btn) {
+  await withSaving(btn, async () => {
+    const links = [];
+    ['messenger', 'facebook', 'instagram', 'tiktok', 'whatsapp', 'email', 'website'].forEach(f => {
+      const v = $('social-' + f).value.trim();
+      if (!v) return;
+      if (f === 'email') links.push({ type: f, url: v }); else if (safeUrl(v)) links.push({ type: f, url: safeUrl(v) });
+    });
+    await upsertConfigs({ socialLinks: JSON.stringify(links) });
+    applyConfig();
+    showToast('Social links saved');
+  });
+}
+async function saveBotSettings(btn) {
+  await withSaving(btn, async () => {
+    await upsertConfigs({ botPersonality: $('bot-personality').value, faqs: $('bot-faqs').value, botExtra: $('bot-instructions').value });
+    showToast('Bot settings saved');
+  });
+}
+
+
+/* ---------- My Bots ---------- */
+function pageBase() { return location.origin + location.pathname; }
+function botLink(id) { return pageBase() + '?tid=' + encodeURIComponent(id || '') + cQ('&'); }
+function adminLinkFor(id) { return pageBase() + '?admin=1&tid=' + encodeURIComponent(id || '') + cQ('&'); }
+function currentBotName() { const b = botsList.find(x => x.id === currentBotId); return b ? b.name : ''; }
+function copyText(text, label) {
+  const done = () => showToast((label || 'Link') + ' copied');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => { window.prompt('Kopyahin ito:', text); });
+  } else { window.prompt('Kopyahin ito:', text); }
+}
+
+async function loadBots() {
+  const res = await sb.from('bots').select('id,name,is_default,created_at').order('created_at', { ascending: true });
+  if (res.error) { showToast('Error: ' + res.error.message + ' (na-run mo na ba ang upgrade SQL?)', true); botsList = []; }
+  else botsList = res.data || [];
+  renderBotSwitch();
+}
+function renderBotSwitch() {
+  const sel = $('bot-switch');
+  sel.textContent = '';
+  botsList.forEach(b => {
+    const o = document.createElement('option');
+    o.value = b.id; o.textContent = b.name + (b.is_default ? ' (default)' : '');
+    sel.appendChild(o);
+  });
+  if (currentBotId) sel.value = currentBotId;
+}
+async function switchBot(id, silent) {
+  if (!id) return;
+  currentBotId = id;
+  $('bot-switch').value = id;
+  try { history.replaceState(null, '', '?admin=1&tid=' + encodeURIComponent(id) + cQ('&')); } catch (e) {}
+  await loadConfig();
+  const active = document.querySelector('.admin-tab-btn.active');
+  const tab = active ? active.dataset.tab : 'bots';
+  if (tab === 'bots') renderBots();
+  if (tab === 'products') renderAdminProducts();
+  if (tab === 'leads') loadLeads();
+  if (tab === 'analytics') loadAnalytics();
+  if (!silent) showToast('Ine-edit: ' + currentBotName());
+}
+function mkBtn(label, cls, fn) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'mini-btn' + (cls ? ' ' + cls : ''); b.textContent = label; b.onclick = fn;
+  return b;
+}
+function renderBots() {
+  const box = $('bots-list');
+  box.textContent = '';
+  if (!botsList.length) { const p = document.createElement('p'); p.style.color = 'var(--text-faint)'; p.textContent = 'Wala pang bot.'; box.appendChild(p); return; }
+  const owner = myRole === 'owner';
+  botsList.forEach(b => {
+    const card = document.createElement('div');
+    card.className = 'bot-card' + (b.id === currentBotId ? ' current' : '');
+    const top = document.createElement('div'); top.className = 'bot-card-top';
+    const nm = document.createElement('span'); nm.className = 'bot-card-name'; nm.textContent = b.name; top.appendChild(nm);
+    if (b.is_default) { const d = document.createElement('span'); d.className = 'badge'; d.textContent = 'Default'; d.title = 'Ito ang lalabas kapag walang ?tid= ang link'; top.appendChild(d); }
+    if (b.id === currentBotId) { const e = document.createElement('span'); e.className = 'badge editing'; e.textContent = 'Ine-edit ngayon'; top.appendChild(e); }
+    card.appendChild(top);
+    const link = document.createElement('code'); link.className = 'bot-link'; link.textContent = botLink(b.id); card.appendChild(link);
+    const act = document.createElement('div'); act.className = 'bot-actions';
+    act.appendChild(mkBtn('Edit', 'primary', async () => { await switchBot(b.id); switchTab('config'); }));
+    act.appendChild(mkBtn('Copy chat link', '', () => copyText(botLink(b.id), 'Chat link')));
+    act.appendChild(mkBtn('Open chat', '', () => window.open(botLink(b.id), '_blank', 'noopener')));
+    act.appendChild(mkBtn('Copy admin link', '', () => copyText(adminLinkFor(b.id), 'Admin link')));
+    if (owner) {
+      act.appendChild(mkBtn('Rename', '', () => renameBot(b)));
+      if (!b.is_default) act.appendChild(mkBtn('Make default', '', () => makeDefault(b)));
+      act.appendChild(mkBtn('Share with client', '', () => toggleShare(b, card)));
+      if (botsList.length > 1) act.appendChild(mkBtn('Delete', 'danger', () => deleteBot(b)));
+    }
+    card.appendChild(act);
+    box.appendChild(card);
+  });
+}
+async function createBot(btn) {
+  const name = $('new-bot-name').value.trim();
+  if (!name) { showToast('Ilagay muna ang pangalan ng bagong bot.', true); $('new-bot-name').focus(); return; }
+  await withSaving(btn, async () => {
+    const res = must(await sb.rpc('create_bot', { p_name: name }));
+    const id = res.data;
+    await upsertConfigs({ brandName: name }, id);
+    $('new-bot-name').value = '';
+    await loadBots();
+    await switchBot(id, true);
+    switchTab('config');
+    showToast('Nagawa ang "' + name + '". Sagutan ang Config, Products at Payment, tapos i-save.');
+  });
+}
+async function renameBot(b) {
+  const name = (window.prompt('Bagong pangalan ng bot (para sa listahan mo lang):', b.name) || '').trim();
+  if (!name || name === b.name) return;
+  try {
+    must(await sb.from('bots').update({ name: name.slice(0, 120) }).eq('id', b.id));
+    await loadBots(); renderBots(); showToast('Napalitan ang pangalan');
+  } catch (err) { showToast('Error: ' + err.message, true); }
+}
+async function makeDefault(b) {
+  if (!confirm('Gawing default ang "' + b.name + '"? Ito ang lalabas kapag binuksan ang link na walang ?tid= (hal. ang lumang link mo).')) return;
+  try {
+    must(await sb.rpc('set_default_bot', { p_bot: b.id }));
+    await loadBots(); renderBots(); showToast('Default na ang "' + b.name + '"');
+  } catch (err) { showToast('Error: ' + err.message, true); }
+}
+async function deleteBot(b) {
+  const typed = window.prompt('Mabubura ang "' + b.name + '" pati ang products, chats at leads nito. HINDI na ito maibabalik.\n\nI-type ang DELETE para ituloy:');
+  if ((typed || '').trim().toUpperCase() !== 'DELETE') return;
+  try {
+    must(await sb.rpc('delete_bot', { p_bot: b.id }));
+    await loadBots();
+    const next = botsList.find(x => x.id === currentBotId) || botsList.find(x => x.is_default) || botsList[0];
+    if (next) await switchBot(next.id, true);
+    renderBots();
+    showToast('Nabura ang "' + b.name + '"');
+  } catch (err) { showToast('Error: ' + err.message, true); }
+}
+
+/* ---------- Share a bot with a client ---------- */
+async function toggleShare(b, card) {
+  const existing = card.querySelector('.share-panel');
+  if (existing) { existing.remove(); return; }
+  const panel = document.createElement('div'); panel.className = 'share-panel';
+  const h = document.createElement('div'); h.className = 'admin-label'; h.textContent = 'Clients na may access sa "' + b.name + '"'; panel.appendChild(h);
+  const how = document.createElement('ol');
+  ['Sa Supabase → Authentication → Users → Add user → Create new user: ilagay ang email ng client at isang password, i-check ang Auto Confirm User.',
+   'Idagdag dito ang parehong email.',
+   'Ibigay sa client ang admin link ng bot na ito (Copy admin link) at ang password. Ang bot na ito lang ang makikita at mae-edit niya.']
+    .forEach(t => { const li = document.createElement('li'); li.textContent = t; how.appendChild(li); });
+  panel.appendChild(how);
+  const list = document.createElement('div'); panel.appendChild(list);
+  const row = document.createElement('div'); row.className = 'create-row'; row.style.marginTop = '10px';
+  const inp = document.createElement('input'); inp.type = 'email'; inp.className = 'admin-input'; inp.placeholder = 'client@email.com'; inp.maxLength = 200;
+  const add = mkBtn('Add client', 'primary', async () => {
+    const email = inp.value.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showToast('Mali ang email.', true); return; }
+    try {
+      must(await sb.from('bot_members').insert({ bot_id: b.id, email }));
+      inp.value = ''; await loadMembers(b, list); showToast('Na-share kay ' + email);
+    } catch (err) { showToast(/duplicate/i.test(err.message) ? 'Naka-share na sa email na iyan.' : 'Error: ' + err.message, true); }
+  });
+  row.appendChild(inp); row.appendChild(add); panel.appendChild(row);
+  card.appendChild(panel);
+  await loadMembers(b, list);
+}
+async function loadMembers(b, list) {
+  list.textContent = '';
+  const res = await sb.from('bot_members').select('email').eq('bot_id', b.id).order('created_at', { ascending: true });
+  if (res.error) { list.textContent = 'Error: ' + res.error.message; return; }
+  if (!(res.data || []).length) { const p = document.createElement('p'); p.style.cssText = 'font-size:13px;color:var(--text-faint);'; p.textContent = 'Wala pang client na may access.'; list.appendChild(p); return; }
+  res.data.forEach(m => {
+    const r = document.createElement('div'); r.className = 'member-row';
+    const e = document.createElement('span'); e.textContent = m.email; r.appendChild(e);
+    r.appendChild(mkBtn('Remove', 'danger', async () => {
+      if (!confirm('Alisin ang access ni ' + m.email + '?')) return;
+      try { must(await sb.from('bot_members').delete().eq('bot_id', b.id).eq('email', m.email)); await loadMembers(b, list); showToast('Inalis ang access'); }
+      catch (err) { showToast('Error: ' + err.message, true); }
+    }));
+    list.appendChild(r);
+  });
+}
+
+/* ---------- Leads ---------- */
+let leadsCache = [];
+async function loadLeads() {
+  const container = $('leads-table-container');
+  container.textContent = '';
+  try {
+    const res = must(await sb.from('leads').select('*').eq('bot_id', currentBotId).order('created_at', { ascending: false }));
+    leadsCache = res.data || [];
+    if (!leadsCache.length) { const p = document.createElement('p'); p.style.cssText = 'color:var(--text-faint);text-align:center;'; p.textContent = 'No leads yet.'; container.appendChild(p); return; }
+    const table = document.createElement('table');
+    table.style.cssText = 'width:100%;border-collapse:collapse;color:var(--text);';
+    const head = document.createElement('tr'); head.style.cssText = 'border-bottom:1px solid var(--line);text-align:left;';
+    ['Name', 'Email', 'Phone', 'Date'].forEach(h => { const th = document.createElement('th'); th.style.cssText = 'padding:10px;color:var(--text-soft);font-size:12.5px;'; th.textContent = h; head.appendChild(th); });
+    table.appendChild(head);
+    leadsCache.forEach(l => {
+      const tr = document.createElement('tr'); tr.style.cssText = 'border-bottom:1px solid var(--line-soft);';
+      [l.name, l.email, l.phone, new Date(l.created_at).toLocaleDateString()].forEach(v => { const td = document.createElement('td'); td.style.padding = '10px'; td.textContent = v || '-'; tr.appendChild(td); });
+      table.appendChild(tr);
+    });
+    container.appendChild(table);
+  } catch (err) { const p = document.createElement('p'); p.style.color = 'var(--danger)'; p.textContent = 'Error: ' + err.message; container.appendChild(p); }
+}
+function csvCell(v) {
+  let s = String(v == null ? '' : v);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // iwas formula injection sa Excel/Sheets
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+function exportLeadsToCSV() {
+  if (!leadsCache.length) { showToast('No leads to export.', true); return; }
+  const rows = [['Name', 'Email', 'Phone', 'Date']].concat(leadsCache.map(l => [l.name, l.email, l.phone, l.created_at]));
+  const blob = new Blob([rows.map(r => r.map(csvCell).join(',')).join('\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  const slug = (currentBotName() || 'bot').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'bot';
+  a.href = URL.createObjectURL(blob); a.download = 'leads_' + slug + '_' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+  showToast('Leads exported');
+}
+
+/* ---------- Analytics ---------- */
+function barRow(label, value, pct, purple) {
+  const wrap = document.createElement('div'); wrap.style.marginBottom = '15px';
+  const top = document.createElement('div'); top.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:5px;';
+  const a = document.createElement('span'); a.style.cssText = 'color:var(--text-faint);font-size:12.5px;'; a.textContent = label;
+  const b = document.createElement('span'); b.style.cssText = 'color:' + (purple ? '#8B6FC4' : 'var(--accent)') + ';font-size:12.5px;font-weight:600;'; b.textContent = value;
+  top.appendChild(a); top.appendChild(b);
+  const bar = document.createElement('div'); bar.className = 'chart-bar' + (purple ? ' purple' : ''); bar.style.width = Math.max(pct, 5) + '%';
+  wrap.appendChild(top); wrap.appendChild(bar);
+  return wrap;
+}
+async function loadAnalytics() {
+  try {
+    const leads = (must(await sb.from('leads').select('created_at').eq('bot_id', currentBotId)).data) || [];
+    const conv = (must(await sb.from('conversations').select('started_at,messages_count,lead_captured').eq('bot_id', currentBotId)).data) || [];
+    const captured = conv.filter(c => c.lead_captured).length;
+    $('stat-total-leads').textContent = leads.length;
+    $('stat-total-conversations').textContent = conv.length;
+    $('stat-conversion-rate').textContent = (conv.length ? Math.round(captured / conv.length * 100) : 0) + '%';
+    $('stat-avg-messages').textContent = conv.length ? Math.round(conv.reduce((s, c) => s + (c.messages_count || 0), 0) / conv.length) : 0;
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const key = d.toLocaleDateString('en-CA');
+      const n = leads.filter(l => l.created_at && new Date(l.created_at).toLocaleDateString('en-CA') === key).length +
+                conv.filter(c => c.started_at && new Date(c.started_at).toLocaleDateString('en-CA') === key).length;
+      days.push({ d, n });
+    }
+    const max = Math.max(...days.map(x => x.n), 1);
+    const ac = $('activity-chart'); ac.textContent = '';
+    days.forEach(x => ac.appendChild(barRow(x.d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), x.n + ' interactions', x.n / max * 100, false)));
+    const hours = Array(24).fill(0);
+    conv.forEach(c => { if (c.started_at) hours[new Date(c.started_at).getHours()]++; });
+    const hmax = Math.max(...hours, 1);
+    const ph = $('peak-hours-chart'); ph.textContent = '';
+    hours.map((n, h) => [h, n]).sort((a, b) => b[1] - a[1]).slice(0, 5).forEach(([h, n]) => ph.appendChild(barRow(`${h}:00 - ${h + 1}:00`, n + ' chats', n / hmax * 100, true)));
+  } catch (err) { console.error('Analytics error:', err); }
+}
+</script>
+<script>/* keep the Pahina Connect link on the Setup Wizard button */
+document.querySelectorAll('a[href="setup.html"]').forEach(function (a) { a.href = 'setup.html' + cQ('?'); });
+</script>
+</body>
+
+</html>
