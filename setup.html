@@ -274,8 +274,8 @@
 
 <div class="shell">
   <div class="masthead">
-    <h1>Gumawa ng bagong AI chatbot</h1>
-    <p>Sagutan ang ilang tanong at gagawa kami ng assistant na sumasagot sa customers mo 24/7.</p>
+    <h1>Create a new AI chatbot</h1>
+    <p>Answer a few questions and we will build an assistant that answers your customers 24/7.</p>
   </div>
 
   <div class="layout">
@@ -298,7 +298,7 @@
         <h2 class="step-heading">Business info</h2>
         <p class="step-sub">This tells your AI employee who it's speaking on behalf of.</p>
 
-        <div class="new-bot-note"><b>Laging bagong bot ang gagawin nito.</b> Hindi nito papalitan ang mga bot mo na. Para baguhin ang isang existing bot, gamitin ang admin panel → <b>My Bots</b> → <b>Edit</b>.</div>
+        <div class="new-bot-note"><b>This always creates a new bot.</b> It never replaces your existing bots. To change an existing bot, use the admin panel → <b>My Bots</b> → <b>Edit</b>.</div>
 
         <div class="preview-panel">
           <div class="preview-label">Live preview</div>
@@ -474,17 +474,17 @@
         <div class="form-group">
           <label>Google Gemini API key</label>
           <input type="password" id="apiKey" placeholder="Paste your API key here" autocomplete="new-password">
-          <div class="hint">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a>. <b>May bot ka na at naka-save na ang key mo?</b> Iwanang blangko; gagamitin ng bagong bot ang shared key mo. Kung maglalagay ka ng bago, para sa bot na ito lang iyon.</div>
+          <div class="hint">Get a free key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a>. <b>Already have a bot with a saved key?</b> Leave this blank; the new bot will use your shared key. If you paste a new key, it is used for this bot only.</div>
           <div class="security-note">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Naka-save sa sarili mong Supabase project at hindi nakikita ng mga bisita ng page mo.
+            Saved in your own Supabase project and never shown to your page visitors.
           </div>
         </div>
 
         <div class="form-group">
           <label>Admin email</label>
-          <input type="email" id="adminEmail" placeholder="ang email na nilagay mo sa schema.sql" autocomplete="username" required>
-          <div class="hint">Ito ang admin user na ginawa mo sa Supabase (Authentication → Users).</div>
+          <input type="email" id="adminEmail" placeholder="the owner email you used in setup" autocomplete="username" required>
+          <div class="hint">This is your owner login (the same one you use for all Pahina tools).</div>
         </div>
 
         <div class="form-group">
@@ -493,7 +493,7 @@
             <input type="password" id="adminPassword" autocomplete="current-password" required>
             <button type="button" class="pw-toggle" onclick="togglePassword('adminPassword', this)">Show</button>
           </div>
-          <div class="hint">Hindi ito sine-save ng wizard. Ginagamit lang ito para mag-login at i-save ang settings mo.</div>
+          <div class="hint">The wizard never saves your password. It is only used to log in and save your settings.</div>
         </div>
 
         <div class="btn-group">
@@ -520,14 +520,14 @@
         <div class="link-box">
           <h3>Employee link — share with customers</h3>
           <div class="desc">Put this on your website, social profiles, or send it directly to buyers.</div>
-          <code id="botLink">(lalabas dito ang link ng chatbot)</code>
+          <code id="botLink">(your chatbot link appears here)</code>
           <button class="btn btn-secondary" onclick="copyToClipboard('botLink')">Copy link</button>
         </div>
 
         <div class="link-box">
           <h3>Admin panel — for you only</h3>
           <div class="desc">Use this to update products, pricing, and settings. Keep it private.</div>
-          <code id="adminLink">(lalabas dito ang admin link)</code>
+          <code id="adminLink">(your admin link appears here)</code>
           <button class="btn btn-secondary" onclick="copyToClipboard('adminLink')">Copy link</button>
         </div>
 
@@ -538,8 +538,8 @@
             <li>Share the employee link on your website or with customers</li>
             <li>Test it yourself before sending it out</li>
             <li>Use the admin panel any time you need to make changes</li>
-            <li>Walang Gemini key? Idagdag ito sa admin panel → Settings (shared) o Config (para sa bot na ito)</li>
-            <li>Lahat ng bots mo ay nasa admin panel → My Bots</li>
+            <li>No Gemini key yet? Add it in the admin panel → Settings (shared) or Config (for this bot)</li>
+            <li>All your bots are in the admin panel → My Bots</li>
           </ul>
         </div>
 
@@ -562,7 +562,7 @@
         <div class="checklist">
           <h3>Quick reference</h3>
           <ul>
-            <li>Employee link — ibahagi ito sa customers</li>
+            <li>Employee link — share it with customers</li>
             <li>Admin panel — your control center, keep it private</li>
             <li>Support — support@digiteralevi.com</li>
             <li>Tutorials — video guides on our YouTube channel</li>
@@ -580,7 +580,7 @@
         </div>
 
         <div class="btn-group" style="justify-content:flex-start; flex-wrap:wrap;">
-          <button type="button" class="btn btn-secondary" onclick="startAnotherBot()">Gumawa ng isa pang bot</button>
+          <button type="button" class="btn btn-secondary" onclick="startAnotherBot()">Create another bot</button>
           <a href="https://digitera-storefront.vercel.app/" target="_blank" class="btn btn-primary" style="text-decoration:none; display:inline-block;">Visit our main store</a>
         </div>
 
@@ -629,7 +629,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* =====================================================================
-   CONFIG — dapat pareho ng nasa index.html (Supabase -> Project Settings -> API)
+   CONFIG — must match index.html (Supabase -> Project Settings -> API), or open the page from a Pahina Connect link
    ===================================================================== */
 const CONFIG = {
   SUPABASE_URL: 'PASTE_YOUR_SUPABASE_URL',
@@ -767,10 +767,10 @@ function must(res) { if (res && res.error) throw new Error(res.error.message); r
 async function generateBot() {
   if (!validateStep(4)) return;
   if (/^PASTE_/.test(CONFIG.SUPABASE_URL) || /^PASTE_/.test(CONFIG.SUPABASE_ANON_KEY) || !window.supabase) {
-    showToast('Palitan muna ang CONFIG sa itaas ng setup.html (Supabase URL at anon key).');
+    showToast('Open this page from your Pahina Connect link, or fill in CONFIG at the top of setup.html (Supabase URL and public key).');
     return;
   }
-  if (!document.getElementById('botPersonality').value) { showToast('Pumili ng personality.'); return; }
+  if (!document.getElementById('botPersonality').value) { showToast('Choose a personality.'); return; }
   const overlay = document.getElementById('loadingOverlay');
   const btnGroup = document.querySelector('#step4 .btn-group');
   const loadingText = document.getElementById('loadingText');
@@ -780,20 +780,20 @@ async function generateBot() {
 
   try {
     sb = sb || window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-    loadingText.textContent = 'Nagla-login...';
+    loadingText.textContent = 'Logging in...';
     const email = document.getElementById('adminEmail').value.trim();
     const login = await sb.auth.signInWithPassword({ email, password: document.getElementById('adminPassword').value });
-    if (login.error || !login.data.session) { return fail('Mali ang admin email o password.'); }
+    if (login.error || !login.data.session) { return fail('Wrong owner email or password.'); }
     const admin = await sb.rpc('is_admin');
     if (admin.error) { await sb.auth.signOut(); return fail('May problema: ' + admin.error.message); }
-    if (!admin.data) { await sb.auth.signOut(); return fail('Ang owner/admin account lang ang puwedeng gumawa ng bagong bot.'); }
+    if (!admin.data) { await sb.auth.signOut(); return fail('Only the owner account can create a new bot.'); }
 
     const g = (id) => (document.getElementById(id).value || '').trim();
 
-    // Laging BAGONG bot. Exception: bagong install na may iisang blangkong bot pa lang -> iyon ang pupunuin.
-    loadingText.textContent = 'Gumagawa ng bagong bot...';
+    // Always a NEW bot. Exception: a fresh install with a single empty bot -> fill that one.
+    loadingText.textContent = 'Creating your new bot...';
     const botsRes = await sb.from('bots').select('id').order('created_at', { ascending: true });
-    if (botsRes.error) { await sb.auth.signOut(); return fail('Hindi pa naka-upgrade ang database. I-run muna ang multi-bot SQL (tingnan ang guide).'); }
+    if (botsRes.error) { await sb.auth.signOut(); return fail('Your database is not set up yet. Finish the engine step in Pahina Connect first.'); }
     let botId = null;
     if ((botsRes.data || []).length === 1) {
       const only = botsRes.data[0].id;
@@ -801,18 +801,18 @@ async function generateBot() {
       const usedPr = must(await sb.from('products').select('id').eq('bot_id', only).limit(1));
       if (!usedCfg.data.length && !usedPr.data.length) {
         botId = only;
-        must(await sb.from('bots').update({ name: g('businessName').slice(0, 120) || 'Unang bot' }).eq('id', botId));
+        must(await sb.from('bots').update({ name: g('businessName').slice(0, 120) || 'First bot' }).eq('id', botId));
       }
     }
     if (!botId && createdBotId) {
-      // nag-retry pagkatapos ng error: gamitin ulit ang bot na nagawa kanina, para walang doble
+      // retry after an error: reuse the bot made earlier, so there are no duplicates
       botId = createdBotId;
       must(await sb.from('products').delete().eq('bot_id', botId));
     }
     if (!botId) botId = must(await sb.rpc('create_bot', { p_name: g('businessName') })).data;
     createdBotId = botId;
 
-    loadingText.textContent = 'Sine-save ang business info...';
+    loadingText.textContent = 'Saving your business info...';
     const pay = [];
     if (g('gcashNumber')) pay.push({ type: 'gcash', number: g('gcashNumber'), name: g('gcashName') });
     if (g('mayaNumber')) pay.push({ type: 'maya', number: g('mayaNumber') });
@@ -823,7 +823,7 @@ async function generateBot() {
     };
     must(await sb.from('configs').upsert(Object.keys(cfg).map(k => ({ bot_id: botId, key: k, value: cfg[k] })), { onConflict: 'bot_id,key' }));
 
-    loadingText.textContent = 'Sine-save ang products...';
+    loadingText.textContent = 'Saving your products...';
     const items = Array.from(document.querySelectorAll('.product-item')).map((el, i) => ({
       name: el.querySelector('.product-name').value.trim(),
       price: el.querySelector('.product-price').value.trim(),
@@ -833,9 +833,9 @@ async function generateBot() {
     })).filter(p => p.name);
     if (items.length) must(await sb.from('products').insert(items));
 
-    loadingText.textContent = 'Kinokonekta ang AI...';
+    loadingText.textContent = 'Connecting the AI...';
     if (g('apiKey')) {
-      // walang shared key pa -> gawing shared (para magamit ng lahat ng bots); kung meron na -> para sa bot na ito lang
+      // no shared key yet -> make it shared (for all bots); if one exists -> for this bot only
       const shared = await sb.rpc('has_secret', { p_key: 'gemini_key' });
       const keyName = shared.data ? 'gemini_key:' + botId : 'gemini_key';
       must(await sb.rpc('set_secret', { p_key: keyName, p_value: g('apiKey') }));
@@ -843,7 +843,7 @@ async function generateBot() {
     must(await sb.rpc('set_secret', { p_key: 'owner_contact', p_value: JSON.stringify({ name: g('ownerName'), email: g('email'), phone: g('phone') }) }));
 
     await sb.auth.signOut();
-    // walang sine-save na password o API key sa browser
+    // no password or API key is saved in the browser
     try { localStorage.removeItem('ai_employee_draft'); } catch (e) {}
 
     const base = location.href.split('#')[0].split('?')[0].replace(/[^\/]*$/, '');

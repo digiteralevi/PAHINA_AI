@@ -234,8 +234,8 @@ body.role-member .owner-only{ display:none !important; }
 
 <div id="setup-needed" class="admin-modal hidden" style="z-index:5000;">
   <div class="admin-login-card">
-    <h2>Hindi pa naka-connect</h2>
-    <p>Buksan ang <b>index.html</b> sa text editor at palitan ang dalawang value sa <b>CONFIG</b> sa itaas ng script: ang Supabase URL at ang anon key. O i-download ulit ang files mula sa guide (Step 7).</p>
+    <h2>Not connected yet</h2>
+    <p>Open this page from your <b>Pahina Connect</b> link, or open <b>index.html</b> in a text editor and fill in the two values in <b>CONFIG</b> near the top of the script: your Supabase URL and your public (anon) key.</p>
   </div>
 </div>
 
@@ -311,7 +311,7 @@ body.role-member .owner-only{ display:none !important; }
 <div id="admin-login" class="admin-modal hidden">
   <div class="admin-login-card">
     <h2>Admin panel</h2>
-    <p>Mag-login gamit ang email at password mo.</p>
+    <p>Log in with your email and password.</p>
     <input type="email" id="admin-email" placeholder="Admin email" class="admin-input" autocomplete="username">
     <input type="password" id="admin-password" placeholder="Password" class="admin-input" autocomplete="current-password" onkeypress="if(event.key==='Enter') adminLogin()">
     <button onclick="adminLogin()" class="btn btn-accent" style="width:100%; margin-bottom:10px;">Login</button>
@@ -353,14 +353,14 @@ body.role-member .owner-only{ display:none !important; }
       <div id="tab-bots">
         <div class="admin-section">
           <h3>My Bots</h3>
-          <p class="tab-help">Bawat bot ay may sariling business info, products, payment, personality at link. Pindutin ang <b>Edit</b> sa isang bot, tapos gamitin ang mga tab sa kaliwa (Config, Products, atbp.).</p>
+          <p class="tab-help">Each bot has its own business info, products, payment, personality and link. Click <b>Edit</b> on a bot, then use the tabs on the left (Config, Products and more).</p>
           <div class="create-bot owner-only">
-            <label class="admin-label" for="new-bot-name">Gumawa ng bagong bot</label>
+            <label class="admin-label" for="new-bot-name">Create a new bot</label>
             <div class="create-row">
-              <input type="text" id="new-bot-name" class="admin-input" maxlength="120" placeholder="Pangalan ng negosyo o client, hal. VIP ROI Framework" onkeypress="if(event.key==='Enter') createBot($('create-bot-btn'))">
+              <input type="text" id="new-bot-name" class="admin-input" maxlength="120" placeholder="Business or client name, e.g. Glow Salon" onkeypress="if(event.key==='Enter') createBot($('create-bot-btn'))">
               <button type="button" id="create-bot-btn" onclick="createBot(this)" class="save-btn">+ Create new bot</button>
             </div>
-            <p class="tab-help">Laging <b>bagong</b> bot ito, hindi nito papalitan ang mga dati mo. Puwede mo ring gamitin ang <a href="setup.html" target="_blank" rel="noopener">Setup Wizard</a> para sa step-by-step.</p>
+            <p class="tab-help">This always creates a <b>new</b> bot and never replaces your existing ones. You can also use the <a href="setup.html" target="_blank" rel="noopener">Setup Wizard</a> for a step-by-step setup.</p>
           </div>
           <div id="bots-list"><p style="color: var(--text-faint);">Loading bots...</p></div>
         </div>
@@ -374,7 +374,7 @@ body.role-member .owner-only{ display:none !important; }
           <input type="text" id="cfg-heroText" class="admin-input" placeholder="e.g., Your business, working 24/7">
           <label class="admin-label">Tagline / sub-headline</label>
           <input type="text" id="cfg-tagline" class="admin-input" placeholder="e.g., An assistant that sells for you">
-          <label class="admin-label">Business description (nababasa ng AI)</label>
+          <label class="admin-label">Business description (the AI reads this)</label>
           <textarea id="cfg-businessDesc" rows="3" class="admin-input" placeholder="What you sell, who buys it, what makes you different..."></textarea>
           <label class="admin-label">Language</label>
           <select id="cfg-lang" class="admin-input">
@@ -386,12 +386,12 @@ body.role-member .owner-only{ display:none !important; }
           <h3>AI employee</h3>
           <label class="admin-label">Employee name</label>
           <input type="text" id="cfg-botName" class="admin-input" placeholder="e.g., Alex, Sarah">
-          <label class="admin-label">Gemini API key ng bot na ito <span style="font-weight:400;">(optional — kung blangko, gagamitin ang shared key sa Settings)</span></label>
-          <input type="password" id="cfg-apiKey" class="admin-input" placeholder="Paste a key para sa bot na ito lang" autocomplete="new-password">
+          <label class="admin-label">Gemini API key for this bot <span style="font-weight:400;">(optional — if blank, the shared key in Settings is used)</span></label>
+          <input type="password" id="cfg-apiKey" class="admin-input" placeholder="Paste a key for this bot only" autocomplete="new-password">
           <p id="cfg-apiKey-status" style="font-size:12px;color:var(--text-faint);margin:-8px 0 16px;"></p>
-          <label class="admin-label">Gemini model ng bot na ito <span style="font-weight:400;">(optional — iwanang blangko para awtomatiko)</span></label>
+          <label class="admin-label">Gemini model for this bot <span style="font-weight:400;">(optional — leave blank for automatic)</span></label>
           <input type="text" id="cfg-model" class="admin-input" placeholder="gemini-2.5-flash">
-          <label class="admin-label">Shop / website link <span style="font-weight:400;">(optional — lalabas bilang "Visit shop")</span></label>
+          <label class="admin-label">Shop / website link <span style="font-weight:400;">(optional — shown as "Visit shop")</span></label>
           <input type="url" id="cfg-shopUrl" class="admin-input" placeholder="https://your-shop.vercel.app">
         </div>
         <button onclick="saveAllConfig(this)" class="save-btn">Save all config</button>
@@ -400,7 +400,7 @@ body.role-member .owner-only{ display:none !important; }
       <div id="tab-products" class="hidden">
         <div class="admin-section">
           <h3>Your products / services</h3>
-          <p style="font-size:12.5px;color:var(--text-soft);margin-bottom:14px;">Ito ang ginagamit ng AI na sagot sa presyo at features. Isulat ang bawat feature sa sariling linya.</p>
+          <p style="font-size:12.5px;color:var(--text-soft);margin-bottom:14px;">The AI uses this to answer questions about prices and features. Write one feature per line.</p>
           <div id="admin-products-container"></div>
           <button onclick="addAdminProduct()" class="add-btn">+ Add new product</button>
         </div>
@@ -457,7 +457,7 @@ body.role-member .owner-only{ display:none !important; }
           <label class="admin-label">FAQs (frequently asked questions)</label>
           <textarea id="bot-faqs" rows="6" class="admin-input" placeholder="Q: What are your hours?&#10;A: 8am to 8pm daily."></textarea>
           <label class="admin-label">Additional instructions</label>
-          <textarea id="bot-instructions" rows="5" class="admin-input" placeholder="Hal. Mag-offer ng libreng consultation kapag nag-aalangan ang customer."></textarea>
+          <textarea id="bot-instructions" rows="5" class="admin-input" placeholder="e.g. Offer a free consultation when a customer is unsure."></textarea>
         </div>
         <button onclick="saveBotSettings(this)" class="save-btn">Save bot settings</button>
       </div>
@@ -502,8 +502,8 @@ body.role-member .owner-only{ display:none !important; }
           <button onclick="changePassword(this)" class="save-btn">Change password</button>
         </div>
         <div class="admin-section owner-only">
-          <h3>Shared Gemini key (para sa lahat ng bots)</h3>
-          <p class="tab-help" style="margin-top:-10px;">Gagamitin ito ng bawat bot na walang sariling key sa Config tab.</p>
+          <h3>Shared Gemini key (for all bots)</h3>
+          <p class="tab-help" style="margin-top:-10px;">Every bot without its own key in the Config tab uses this one.</p>
           <label class="admin-label">Shared Google Gemini API key</label>
           <input type="password" id="set-sharedKey" class="admin-input" placeholder="Paste a new key to replace it" autocomplete="new-password">
           <p id="set-sharedKey-status" style="font-size:12px;color:var(--text-faint);margin:-8px 0 16px;"></p>
@@ -515,7 +515,7 @@ body.role-member .owner-only{ display:none !important; }
           <h3>Connection</h3>
           <label class="admin-label">Supabase project</label>
           <input type="text" id="set-project" readonly class="admin-input" style="color: var(--text-faint);">
-          <p style="font-size:12.5px;color:var(--text-soft);">Ang Gemini keys ay naka-save sa sarili mong Supabase project at hindi nakikita ng mga bisita.</p>
+          <p style="font-size:12.5px;color:var(--text-soft);">Your Gemini keys are saved in your own Supabase project and are never shown to visitors.</p>
         </div>
       </div>
     </div>
@@ -525,8 +525,8 @@ body.role-member .owner-only{ display:none !important; }
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* =====================================================================
-   CONFIG — PALITAN ITO (Supabase Dashboard -> Project Settings -> API)
-   Ang "anon" key ay PUBLIC by design. Huwag ilagay dito ang "service_role" key!
+   CONFIG — FILL THIS IN (Supabase Dashboard -> Project Settings -> API), or open the page from a Pahina Connect link
+   The "anon" / publishable key is PUBLIC by design. Never put the "service_role" / secret key here!
    ===================================================================== */
 const CONFIG = {
   SUPABASE_URL: 'PASTE_YOUR_SUPABASE_URL',
@@ -549,7 +549,7 @@ const cQ = (lead) => PAHINA_C ? (lead + 'c=' + encodeURIComponent(PAHINA_C)) : '
 const urlParams = new URLSearchParams(window.location.search);
 window.isAdminView = urlParams.get('admin') === '1';
 const TID = (urlParams.get('tid') || urlParams.get('bot') || '').trim();
-let currentBotId = null;     // ang bot na ipinapakita / ine-edit
+let currentBotId = null;     // the bot being shown / edited
 let myRole = null;           // 'owner' | 'member'
 let botsList = [];
 window.configData = {};
@@ -631,7 +631,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     else { const m = $('admin-login'); m.classList.remove('hidden'); m.style.display = 'flex'; }
   } else {
     startConversation();
-    // ?chat=1 → buksan agad ang chat (hal. galing sa button sa Messenger / Botcake)
+    // ?chat=1 → open the chat right away (e.g. from a Messenger / Botcake button)
     if (urlParams.get('chat') === '1') toggleChat(true);
   }
 });
@@ -705,7 +705,7 @@ function appendMsg(text, sender) {
   const div = document.createElement('div');
   div.className = 'msg ' + sender;
   if (sender === 'bot') {
-    // i-escape muna bago ang formatting — hindi pwedeng mag-inject ng HTML ang AI o ang bisita
+    // escape first, then format — neither the AI nor a visitor can inject HTML
     div.innerHTML = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
   } else { div.textContent = text; }
   body.appendChild(div);
@@ -728,14 +728,14 @@ async function sendMessage() {
     });
     if (thinking.parentNode) thinking.remove();
     if (error || !data || !data.reply) {
-      appendMsg('Pasensya, hindi available ang AI ngayon. Paki-tap ang "Leave details" at babalikan ka namin.', 'bot');
+      appendMsg('Sorry, the AI is not available right now. Tap "Leave details" and we will get back to you.', 'bot');
     } else {
       appendMsg(data.reply, 'bot');
       chatHistory.push({ role: 'model', text: data.reply });
     }
   } catch (e) {
     if (thinking.parentNode) thinking.remove();
-    appendMsg('Pasensya, may problema sa connection. Subukan ulit.', 'bot');
+    appendMsg('Sorry, there was a connection problem. Please try again.', 'bot');
   }
   sending = false;
 }
@@ -759,19 +759,19 @@ async function submitLead() {
 async function adminLogin() {
   const email = $('admin-email').value.trim();
   const password = $('admin-password').value;
-  if (!email || !password) { showToast('Ilagay ang email at password.', true); return; }
+  if (!email || !password) { showToast('Enter your email and password.', true); return; }
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error || !data.session) { showToast('Mali ang email o password.', true); return; }
+  if (error || !data.session) { showToast('Wrong email or password.', true); return; }
   $('admin-password').value = '';
   const ok = await sb.rpc('my_role');
-  if (!ok.data) { await sb.auth.signOut(); showToast('Walang access sa admin panel ang account na ito.', true); return; }
+  if (!ok.data) { await sb.auth.signOut(); showToast('This account has no access to the admin panel.', true); return; }
   openAdminPanel();
 }
 async function openAdminPanel() {
   const ok = await sb.rpc('my_role');
   if (!ok.data) {
     await sb.auth.signOut();
-    if (ok.error) showToast('Error: ' + ok.error.message + ' (na-run mo na ba ang upgrade SQL?)', true);
+    if (ok.error) showToast('Error: ' + ok.error.message + ' (did you run the database setup SQL?)', true);
     const m = $('admin-login'); m.classList.remove('hidden'); m.style.display = 'flex'; return;
   }
   myRole = ok.data;
@@ -780,7 +780,7 @@ async function openAdminPanel() {
   $('admin-panel').classList.remove('hidden');
   await loadBots();
   const pick = botsList.find(b => b.id === TID) || botsList.find(b => b.id === currentBotId) || botsList.find(b => b.is_default) || botsList[0];
-  if (!pick) { showToast('Walang bot na naka-share sa account na ito.', true); return; }
+  if (!pick) { showToast('No bot is shared with this account.', true); return; }
   await switchBot(pick.id, true);
   switchTab(myRole === 'owner' || botsList.length > 1 ? 'bots' : 'config');
 }
@@ -795,16 +795,16 @@ async function adminLogout() {
   const m = $('admin-login'); m.classList.remove('hidden'); m.style.display = 'flex';
 }
 function showStorefront() {
-  // buksan ang chat page ng bot na ine-edit
+  // open the chat page of the bot being edited
   location.href = botLink(currentBotId);
 }
 async function changePassword(btn) {
   await withSaving(btn, async () => {
     const p = $('set-newpass').value;
-    if (p.length < 10) throw new Error('Gawing at least 10 characters ang password.');
+    if (p.length < 10) throw new Error('Use at least 10 characters for the password.');
     must(await sb.auth.updateUser({ password: p }));
     $('set-newpass').value = '';
-    showToast('Napalitan ang password');
+    showToast('Password changed');
   });
 }
 
@@ -825,7 +825,7 @@ function switchTab(tabName) {
 async function loadConfig() {
   await loadPublicConfig();
   const c = window.configData;
-  // linisin muna ang mga field para hindi madala ang laman ng ibang bot
+  // clear the fields first so another bot's data is not carried over
   document.querySelectorAll('#admin-panel input:not([readonly]), #admin-panel textarea').forEach(el => { if (el.id !== 'new-bot-name') el.value = ''; });
   setVal('cfg-brandName', c.brandName); setVal('cfg-heroText', c.heroText); setVal('cfg-tagline', c.tagline);
   setVal('cfg-businessDesc', c.businessDesc); setVal('cfg-lang', c.lang || 'en'); setVal('cfg-botName', c.botName);
@@ -849,7 +849,7 @@ async function loadConfig() {
 
 async function upsertConfigs(pairs, botId) {
   const bot = botId || currentBotId;
-  if (!bot) throw new Error('Walang napiling bot.');
+  if (!bot) throw new Error('No bot selected.');
   const rows = Object.keys(pairs).map(k => ({ bot_id: bot, key: k, value: pairs[k] }));
   must(await sb.from('configs').upsert(rows, { onConflict: 'bot_id,key' }));
 }
@@ -863,30 +863,30 @@ async function refreshKeyStatus() {
   const st = $('cfg-apiKey-status');
   st.textContent = '';
   if (own.data) {
-    st.appendChild(document.createTextNode('✓ May sariling Gemini key ang bot na ito (hindi na ipinapakita). Maglagay ng bago para palitan. '));
+    st.appendChild(document.createTextNode('✓ This bot has its own Gemini key (hidden). Paste a new one to replace it. '));
     const rm = document.createElement('button');
-    rm.type = 'button'; rm.className = 'inline-link'; rm.textContent = 'Alisin ang sariling key';
+    rm.type = 'button'; rm.className = 'inline-link'; rm.textContent = 'Remove this bot\'s key';
     rm.onclick = removeBotKey;
     st.appendChild(rm);
   } else if (myRole === 'owner') {
     st.textContent = shared.data
-      ? 'Walang sariling key ang bot na ito, kaya gagamitin nito ang shared key mo (Settings tab). Okay lang iyon.'
-      : 'Wala pang Gemini key. Maglagay dito, o sa Settings → Shared Gemini key para sa lahat ng bots.';
+      ? 'This bot has no key of its own, so it uses your shared key (Settings tab). That is fine.'
+      : 'No Gemini key yet. Add one here, or in Settings → Shared Gemini key for all bots.';
   } else {
-    st.textContent = 'Walang sariling key ang bot na ito, kaya ang key ng owner ang gagamitin. Puwede kang maglagay ng sarili mo.';
+    st.textContent = 'This bot has no key of its own, so the owner\'s key is used. You can add your own.';
   }
   if (myRole === 'owner') {
     $('set-sharedKey-status').textContent = shared.data
-      ? '✓ May naka-save nang shared key (hindi na ito ipinapakita). Maglagay ng bago para palitan.'
-      : 'Wala pang shared key.';
+      ? '✓ A shared key is saved (hidden). Paste a new one to replace it.'
+      : 'No shared key yet.';
   }
 }
 async function removeBotKey() {
-  if (!confirm('Alisin ang sariling Gemini key ng bot na ito? Gagamitin na nito ang shared key.')) return;
+  if (!confirm('Remove this bot\'s own Gemini key? It will use the shared key instead.')) return;
   try {
     must(await sb.rpc('set_secret', { p_key: botKey('gemini_key'), p_value: '' }));
     await refreshKeyStatus();
-    showToast('Inalis ang sariling key ng bot');
+    showToast('Bot key removed');
   } catch (err) { showToast('Error: ' + err.message, true); }
 }
 async function saveSharedKey(btn) {
@@ -915,7 +915,7 @@ async function saveAllConfig(btn) {
   });
 }
 
-/* ---------- Admin: products (DOM-built, walang HTML injection) ---------- */
+/* ---------- Admin: products (DOM-built, no HTML injection) ---------- */
 function syncProductsFromDom() {
   const items = document.querySelectorAll('#admin-products-container .product-item');
   if (!items.length && !document.querySelector('#admin-products-container')) return;
@@ -1018,13 +1018,13 @@ function currentBotName() { const b = botsList.find(x => x.id === currentBotId);
 function copyText(text, label) {
   const done = () => showToast((label || 'Link') + ' copied');
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(done, () => { window.prompt('Kopyahin ito:', text); });
-  } else { window.prompt('Kopyahin ito:', text); }
+    navigator.clipboard.writeText(text).then(done, () => { window.prompt('Copy this:', text); });
+  } else { window.prompt('Copy this:', text); }
 }
 
 async function loadBots() {
   const res = await sb.from('bots').select('id,name,is_default,created_at').order('created_at', { ascending: true });
-  if (res.error) { showToast('Error: ' + res.error.message + ' (na-run mo na ba ang upgrade SQL?)', true); botsList = []; }
+  if (res.error) { showToast('Error: ' + res.error.message + ' (did you run the database setup SQL?)', true); botsList = []; }
   else botsList = res.data || [];
   renderBotSwitch();
 }
@@ -1060,14 +1060,14 @@ function mkBtn(label, cls, fn) {
 function renderBots() {
   const box = $('bots-list');
   box.textContent = '';
-  if (!botsList.length) { const p = document.createElement('p'); p.style.color = 'var(--text-faint)'; p.textContent = 'Wala pang bot.'; box.appendChild(p); return; }
+  if (!botsList.length) { const p = document.createElement('p'); p.style.color = 'var(--text-faint)'; p.textContent = 'No bots yet.'; box.appendChild(p); return; }
   const owner = myRole === 'owner';
   botsList.forEach(b => {
     const card = document.createElement('div');
     card.className = 'bot-card' + (b.id === currentBotId ? ' current' : '');
     const top = document.createElement('div'); top.className = 'bot-card-top';
     const nm = document.createElement('span'); nm.className = 'bot-card-name'; nm.textContent = b.name; top.appendChild(nm);
-    if (b.is_default) { const d = document.createElement('span'); d.className = 'badge'; d.textContent = 'Default'; d.title = 'Ito ang lalabas kapag walang ?tid= ang link'; top.appendChild(d); }
+    if (b.is_default) { const d = document.createElement('span'); d.className = 'badge'; d.textContent = 'Default'; d.title = 'Shown when a link has no ?tid='; top.appendChild(d); }
     if (b.id === currentBotId) { const e = document.createElement('span'); e.className = 'badge editing'; e.textContent = 'Ine-edit ngayon'; top.appendChild(e); }
     card.appendChild(top);
     const link = document.createElement('code'); link.className = 'bot-link'; link.textContent = botLink(b.id); card.appendChild(link);
@@ -1088,7 +1088,7 @@ function renderBots() {
 }
 async function createBot(btn) {
   const name = $('new-bot-name').value.trim();
-  if (!name) { showToast('Ilagay muna ang pangalan ng bagong bot.', true); $('new-bot-name').focus(); return; }
+  if (!name) { showToast('Type a name for the new bot first.', true); $('new-bot-name').focus(); return; }
   await withSaving(btn, async () => {
     const res = must(await sb.rpc('create_bot', { p_name: name }));
     const id = res.data;
@@ -1097,26 +1097,26 @@ async function createBot(btn) {
     await loadBots();
     await switchBot(id, true);
     switchTab('config');
-    showToast('Nagawa ang "' + name + '". Sagutan ang Config, Products at Payment, tapos i-save.');
+    showToast('Created "' + name + '". Fill in Config, Products and Payment, then save.');
   });
 }
 async function renameBot(b) {
-  const name = (window.prompt('Bagong pangalan ng bot (para sa listahan mo lang):', b.name) || '').trim();
+  const name = (window.prompt('New bot name (for your list only):', b.name) || '').trim();
   if (!name || name === b.name) return;
   try {
     must(await sb.from('bots').update({ name: name.slice(0, 120) }).eq('id', b.id));
-    await loadBots(); renderBots(); showToast('Napalitan ang pangalan');
+    await loadBots(); renderBots(); showToast('Name changed');
   } catch (err) { showToast('Error: ' + err.message, true); }
 }
 async function makeDefault(b) {
-  if (!confirm('Gawing default ang "' + b.name + '"? Ito ang lalabas kapag binuksan ang link na walang ?tid= (hal. ang lumang link mo).')) return;
+  if (!confirm('Make "' + b.name + '" the default? It is shown when a link has no ?tid= (for example, your old link).')) return;
   try {
     must(await sb.rpc('set_default_bot', { p_bot: b.id }));
-    await loadBots(); renderBots(); showToast('Default na ang "' + b.name + '"');
+    await loadBots(); renderBots(); showToast('"' + b.name + '" is now the default');
   } catch (err) { showToast('Error: ' + err.message, true); }
 }
 async function deleteBot(b) {
-  const typed = window.prompt('Mabubura ang "' + b.name + '" pati ang products, chats at leads nito. HINDI na ito maibabalik.\n\nI-type ang DELETE para ituloy:');
+  const typed = window.prompt('This deletes "' + b.name + '" and all its products, chats and leads. It CANNOT be undone.\n\nType DELETE to continue:');
   if ((typed || '').trim().toUpperCase() !== 'DELETE') return;
   try {
     must(await sb.rpc('delete_bot', { p_bot: b.id }));
@@ -1124,7 +1124,7 @@ async function deleteBot(b) {
     const next = botsList.find(x => x.id === currentBotId) || botsList.find(x => x.is_default) || botsList[0];
     if (next) await switchBot(next.id, true);
     renderBots();
-    showToast('Nabura ang "' + b.name + '"');
+    showToast('Deleted "' + b.name + '"');
   } catch (err) { showToast('Error: ' + err.message, true); }
 }
 
@@ -1133,11 +1133,11 @@ async function toggleShare(b, card) {
   const existing = card.querySelector('.share-panel');
   if (existing) { existing.remove(); return; }
   const panel = document.createElement('div'); panel.className = 'share-panel';
-  const h = document.createElement('div'); h.className = 'admin-label'; h.textContent = 'Clients na may access sa "' + b.name + '"'; panel.appendChild(h);
+  const h = document.createElement('div'); h.className = 'admin-label'; h.textContent = 'Clients with access to "' + b.name + '"'; panel.appendChild(h);
   const how = document.createElement('ol');
-  ['Sa Supabase → Authentication → Users → Add user → Create new user: ilagay ang email ng client at isang password, i-check ang Auto Confirm User.',
-   'Idagdag dito ang parehong email.',
-   'Ibigay sa client ang admin link ng bot na ito (Copy admin link) at ang password. Ang bot na ito lang ang makikita at mae-edit niya.']
+  ['In Supabase → Authentication → Users → Add user → Create new user: enter the client\'s email and a password, and tick Auto Confirm User.',
+   'Add the same email here.',
+   'Give the client this bot\'s admin link (Copy admin link) and the password. They can only see and edit this bot.']
     .forEach(t => { const li = document.createElement('li'); li.textContent = t; how.appendChild(li); });
   panel.appendChild(how);
   const list = document.createElement('div'); panel.appendChild(list);
@@ -1145,11 +1145,11 @@ async function toggleShare(b, card) {
   const inp = document.createElement('input'); inp.type = 'email'; inp.className = 'admin-input'; inp.placeholder = 'client@email.com'; inp.maxLength = 200;
   const add = mkBtn('Add client', 'primary', async () => {
     const email = inp.value.trim().toLowerCase();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showToast('Mali ang email.', true); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showToast('That email is not valid.', true); return; }
     try {
       must(await sb.from('bot_members').insert({ bot_id: b.id, email }));
       inp.value = ''; await loadMembers(b, list); showToast('Na-share kay ' + email);
-    } catch (err) { showToast(/duplicate/i.test(err.message) ? 'Naka-share na sa email na iyan.' : 'Error: ' + err.message, true); }
+    } catch (err) { showToast(/duplicate/i.test(err.message) ? 'Already shared with that email.' : 'Error: ' + err.message, true); }
   });
   row.appendChild(inp); row.appendChild(add); panel.appendChild(row);
   card.appendChild(panel);
@@ -1159,13 +1159,13 @@ async function loadMembers(b, list) {
   list.textContent = '';
   const res = await sb.from('bot_members').select('email').eq('bot_id', b.id).order('created_at', { ascending: true });
   if (res.error) { list.textContent = 'Error: ' + res.error.message; return; }
-  if (!(res.data || []).length) { const p = document.createElement('p'); p.style.cssText = 'font-size:13px;color:var(--text-faint);'; p.textContent = 'Wala pang client na may access.'; list.appendChild(p); return; }
+  if (!(res.data || []).length) { const p = document.createElement('p'); p.style.cssText = 'font-size:13px;color:var(--text-faint);'; p.textContent = 'No clients have access yet.'; list.appendChild(p); return; }
   res.data.forEach(m => {
     const r = document.createElement('div'); r.className = 'member-row';
     const e = document.createElement('span'); e.textContent = m.email; r.appendChild(e);
     r.appendChild(mkBtn('Remove', 'danger', async () => {
-      if (!confirm('Alisin ang access ni ' + m.email + '?')) return;
-      try { must(await sb.from('bot_members').delete().eq('bot_id', b.id).eq('email', m.email)); await loadMembers(b, list); showToast('Inalis ang access'); }
+      if (!confirm('Remove access for ' + m.email + '?')) return;
+      try { must(await sb.from('bot_members').delete().eq('bot_id', b.id).eq('email', m.email)); await loadMembers(b, list); showToast('Access removed'); }
       catch (err) { showToast('Error: ' + err.message, true); }
     }));
     list.appendChild(r);
@@ -1196,7 +1196,7 @@ async function loadLeads() {
 }
 function csvCell(v) {
   let s = String(v == null ? '' : v);
-  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // iwas formula injection sa Excel/Sheets
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // avoid formula injection in Excel/Sheets
   return '"' + s.replace(/"/g, '""') + '"';
 }
 function exportLeadsToCSV() {
